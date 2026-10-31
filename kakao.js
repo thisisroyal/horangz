@@ -35,7 +35,7 @@
     MEDIA_CORPSE_BRIDE: ['corpse-bride', 528, 900], MEDIA_SUNGHO_PHOTO: ['sungho-photo', 675, 900],
     MEDIA_PULDDEUNDAEJI: ['pulddeundaeji', 620, 900],
   };
-  const K = 'assets/kakao/', P = n => `assets/profile/${PEOPLE[n]?.[1] || 'bini'}.jpg`;
+  const K = 'assets/kakao/', P = n => `assets/profile/${PEOPLE[n]?.[1] || 'bini'}.jpg?2`;
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
 
   const ic = d => `<svg class="ic" viewBox="0 0 24 24">${d}</svg>`;
@@ -275,7 +275,7 @@
   const MORE = '<div class="kt-fade"></div>';     // thin fade over the bottom edge of the last row
   const staticRow = r => r.ad
     ? `<div class="kt-room kt-ad"><img class="oi" src="${O + r.icon}.webp" alt=""><div class="tx"><div class="nm"><b>${esc(r.title)}</b></div><p class="pv"><i class="adt">AD</i>${esc(r.text)}</p></div><span class="buy">구매하기</span></div>`
-    : `<div class="kt-room kt-static">${r.icon ? `<img class="oi" src="${O + r.icon}.webp" alt="">` : `<div class="av av2">${r.av.map(a => `<img src="assets/profile/${a}.jpg" alt="">`).join('')}</div>`}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(r.title)}</b>${r.n ? `<i>${r.n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${r.badge ? `<b class="ur">${r.badge}</b>` : ''}</div>`;
+    : `<div class="kt-room kt-static">${r.icon ? `<img class="oi" src="${O + r.icon}.webp" alt="">` : `<div class="av av2">${r.av.map(a => `<img src="assets/profile/${a}.jpg?2" alt="">`).join('')}</div>`}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(r.title)}</b>${r.n ? `<i>${r.n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${r.badge ? `<b class="ur">${r.badge}</b>` : ''}</div>`;
   function list() {
     const st = STATIC.filter(r => !r.ad).map(r => { const [y, mo, d, time] = r.when; return { ...r, y, mo, d, time, stamp: Date.UTC(y, mo - 1, d) / 6e4 + mins(time) }; });
     const rows = [...ROOMS.map(k => ({ k, ...lastInfo(k) })), ...st].sort((a, b) => b.stamp - a.stamp);
