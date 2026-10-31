@@ -111,10 +111,16 @@
       badges(); refreshList();
     }
     // typing indicator: the next sender in the open room is "typing" for ~2.5s before the message lands
-    const nx = queue[0], who = nx && inRoom(nx.k) && atBottom() && nx.at - simNow() < 2600 ? nx.obj.sender : null;
+    const nx = queue[0], real = nx && inRoom(nx.k) && atBottom() && nx.at - simNow() < 2600 ? nx.obj.sender : null;
+    // 성호 keeps starting and stopping typing in his room once his scripted messages have arrived
+    const who = real || (tease && inRoom(FIRST) && !queue.some(q => q.k === FIRST) ? FIRST : null);
     if (who !== typing) { typing = who; refreshRoom(true); }
   }
-  let typing = null;
+  let typing = null, tease = false;
+  (function teaseLoop() {                         // irregular on/off rhythm: typing 1.5-6s, quiet 3-14s
+    tease = !tease;
+    setTimeout(teaseLoop, (tease ? 1500 + Math.random() * 4500 : 3000 + Math.random() * 11000));
+  })();
   const inRoom = k => roomKey === k && roomEl?.classList.contains('on') && current === APPVIEWS.kakaotalk;
   const msgBox = () => roomEl.querySelector('.kt-msgs');
   const atBottom = () => { const b = msgBox(); return b.scrollHeight - b.scrollTop - b.clientHeight < 40; };
