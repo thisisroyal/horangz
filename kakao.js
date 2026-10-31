@@ -104,24 +104,38 @@
       if (date) msgs.push(date);
       msgs.push(obj);
       if (inRoom(k)) {
-        const seen = atBottom(), ty = msgBox().querySelector('.ty-row');
-        typing = null;
-        if (ty) { ty.classList.add('out'); setTimeout(() => refreshRoom(true, true), 260); }   // dots fade, then the message rises in
-        else refreshRoom(true, true);
+        const seen = atBottom();
+        syncRoom(true);                            // only the new bubble is added; the dots (if any) stay below it
         if (!seen) newMsg(obj);
       } else { roomUnread[k] = (roomUnread[k] || 0) + 1; unread++; notify(k, obj); }
       badges(); refreshList();
     }
     // typing indicator: the next sender in the open room is "typing" for ~2.5s before the message lands
-    const nx = queue[0], real = nx && inRoom(nx.k) && atBottom() && nx.at - simNow() < 2600 * SPEED ? nx.obj.sender : null;
+    const nx = queue[0], real = nx && inRoom(nx.k) && nearBottom() && nx.at - simNow() < 2600 * SPEED ? nx.obj.sender : null;
     // 성호 keeps starting and stopping typing in his room from 10:38 until 10:45
     const who = real || (tease && inRoom(FIRST) && simNow() < START + 7 * 6e4 ? FIRST : null);
-    if (who !== typing) {
-      const ty = !who && msgBox()?.querySelector('.ty-row:not(.out)');
-      typing = who;
-      if (ty) { ty.classList.add('out'); setTimeout(() => !typing && refreshRoom(true), 260); }
-      else refreshRoom(true, !!who);
+    setTyping(who);
+  }
+  // typing dots live in one element that is reused, moved and faded; never re-rendered
+  let tyTimer;
+  function setTyping(who) {
+    if (!roomEl) return;
+    const box = msgBox();
+    let row = box.querySelector('.ty-row');
+    typing = who;
+    if (!who) {
+      if (row && !row.classList.contains('out')) { row.classList.add('out'); clearTimeout(tyTimer); tyTimer = setTimeout(() => row.remove(), 260); }
+      return;
     }
+    if (row && row.dataset.who !== who) { row.remove(); row = null; }
+    if (row) {
+      clearTimeout(tyTimer); row.classList.remove('out');
+      if (row !== box.lastElementChild) box.append(row);   // keep the dots under the newest bubble
+      return;
+    }
+    const end = atBottom();
+    box.insertAdjacentHTML('beforeend', `<div class="m g t n ty-row pop" data-who="${esc(who)}"><img class="av" src="${P(who)}" alt=""><span class="who">${esc(PEOPLE[who]?.[0] || who)}</span><div class="b ty"><i></i><i></i><i></i></div></div>`);
+    if (end) box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
   }
   let typing = null, tease = false;
   (function teaseLoop() {                         // irregular on/off rhythm: typing 1.5-6s, quiet 3-14s
@@ -131,6 +145,7 @@
   const inRoom = k => roomKey === k && roomEl?.classList.contains('on') && current === APPVIEWS.kakaotalk;
   const msgBox = () => roomEl.querySelector('.kt-msgs');
   const atBottom = () => { const b = msgBox(); return b.scrollHeight - b.scrollTop - b.clientHeight < 40; };
+  const nearBottom = () => { const b = msgBox(); return b.scrollHeight - b.scrollTop - b.clientHeight < 260; };   // tolerant while a smooth scroll is still running
   function newMsg(m) {
     const b = roomEl.querySelector('.kt-new');
     b.querySelector('img').src = P(m.sender);
@@ -244,7 +259,7 @@
     </div>`;
   }
   // last row is cut and fades out: there seems to be more, but the list stops here
-  const MORE = `<div class="kt-cut"><div class="kt-row"><img src="assets/profile/bini.jpg" alt=""><div></div></div></div>`;
+  const MORE = '<div class="kt-fade"></div>';     // thin fade over the bottom edge of the last row
   function list() {
     const rows = ROOMS.map(k => ({ k, ...lastInfo(k) })).sort((a, b) => b.stamp - a.stamp);
     return `<div class="kt-list">${rows.map(r => {
@@ -264,6 +279,7 @@
       </div>`;
     roomEl = el.querySelector('.kt-roomv');
     const nb = roomEl.querySelector('.kt-new'), box = msgBox();
+    box.addEventListener('animationend', e => e.target.parentElement === box && e.target.classList.remove('pop'));
     nb.addEventListener('click', () => { nb.hidden = true; box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' }); });
     box.addEventListener('scroll', () => { if (atBottom()) nb.hidden = true; }, { passive: true });
     el.querySelector('.kt-nav').addEventListener('click', e => { const t = e.target.closest('[data-tab]')?.dataset.tab; t && tab(t); });
@@ -285,7 +301,8 @@
   }
 
   /* ----- chat room ----- */
-  function render(k) {
+  const render = k => items(k).join('');
+  function items(k) {
     const out = [], flat = [];
     let prevKey = '';
     for (const m of data[k]) {
@@ -305,7 +322,7 @@
       if (f.date) return `<div class="kt-date"><span>${enDate(f.date)}</span></div>`;
       const nx = flat[i + 1], endGroup = !nx || nx.date || nx.start;
       return bubble(f, endGroup, PEOPLE[k] ? 2 : members(k).length + 1);
-    }).join('');
+    });
   }
   function bubble(f, endGroup, n) {
     const { m } = f, mine = m.isMe, named = f.start && !mine && n > 0;
@@ -318,20 +335,30 @@
   }
   function openRoom(k) {
     roomKey = k;
-    typing = null; roomEl.querySelector('.kt-new').hidden = true;
+    typing = null; shown = []; roomEl.querySelector('.kt-new').hidden = true;
     unread -= roomUnread[k] || 0; roomUnread[k] = 0; badges(); refreshList();
     const n = PEOPLE[k] ? 0 : members(k).length + 1;
     roomEl.querySelector('h2').innerHTML = esc(title(k)) + (n ? ` <i>${n}</i>` : '');
     roomEl.classList.add('on');
-    refreshRoom();
+    syncRoom(false);
   }
-  function refreshRoom(keep, anim) {
-    const box = msgBox(), atEnd = !keep || atBottom(), prev = box.querySelectorAll(':scope>:not(.ty-row)').length;
-    box.innerHTML = render(roomKey) + (typing ? `<div class="m g t n ty-row"><img class="av" src="${P(typing)}" alt=""><span class="who">${esc(PEOPLE[typing]?.[0] || typing)}</span><div class="b ty"><i></i><i></i><i></i></div></div>` : '');
-    if (anim) [...box.children].slice(prev).forEach(n => n.classList.add('pop'));
-    if (!atEnd) return;
-    if (anim) box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' }); else box.scrollTop = box.scrollHeight;
+  // Update the room in place: unchanged bubbles stay untouched, changed ones are swapped, new ones rise in.
+  let shown = [];
+  function syncRoom(anim) {
+    const box = msgBox(), end = !anim || atBottom(), next = items(roomKey), ty = box.querySelector('.ty-row');
+    if (!anim) { box.innerHTML = next.join(''); shown = next; typing = null; box.scrollTop = box.scrollHeight; return; }
+    const kids = [...box.children].filter(n => n !== ty);
+    next.forEach((h, i) => {
+      if (h === shown[i]) return;
+      const t = document.createElement('template'); t.innerHTML = h;
+      const n = t.content.firstElementChild;
+      if (kids[i]) kids[i].replaceWith(n);          // e.g. the time label moving to the newest bubble
+      else { n.classList.add('pop'); box.insertBefore(n, ty); }
+    });
+    shown = next;
+    if (end) box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
   }
+
   function closeRoom(instant) {
     if (!roomEl) return;
     roomEl.querySelector('input').blur();
@@ -348,7 +375,7 @@
     if (![...msgs].reverse().find(m => m.type === 'date')?.date.startsWith(date.split(' ').slice(0, 3).join(' '))) msgs.push({ type: 'date', date });
     const n = PEOPLE[roomKey] ? 1 : members(roomKey).length;
     msgs.push({ sender: ME, isMe: true, time: `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${p.minute}`, unread: n, lines: [text] });
-    refreshRoom(false, true);
+    syncRoom(true);
   }
 
   /* ----- keep the input above the on-screen keyboard (lifts the whole phone) ----- */

@@ -489,10 +489,7 @@ img{-webkit-user-drag:none}
 .kt-msgs>.ty-row{transition:opacity .25s ease,transform .25s ease}
 .kt-msgs>.ty-row.out{opacity:0;transform:translateY(-4px)}
 /* lists stop at a half-visible, fading last row */
-.kt-cut{position:relative;height:22px;overflow:hidden;pointer-events:none}
-.kt-cut::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.45),#fff 90%)}
-.kt-list .kt-cut{height:24px}
-.kt-list .kt-cut .kt-row{padding-top:8px}
+.kt-fade{position:relative;height:14px;margin-top:-14px;background:linear-gradient(rgba(255,255,255,0),#fff);pointer-events:none}
 /* chat rooms: the oldest messages fade under the header */
 .kt-msgs{padding-top:100px}
 .kt-msgs::before{content:"";position:absolute;z-index:1;left:0;right:0;top:100px;height:88px;background:linear-gradient(#abc1d1 12%,rgba(171,193,209,0));pointer-events:none}
