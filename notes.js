@@ -5,9 +5,10 @@
     { title: 'H마트', date: [2025, 3, 5], items: ['미역', '불닭', '어묵꼬치', '유부초밥', '투컵두부'] },
     { title: '작업 메모', date: [2025, 2, 27], text: ['자투리 실크들은 내가 고를수 없다.'] },
     { title: '코스트코', date: [2025, 2, 25], items: ['계란', '스테이크 소고기', '모짜렐라 치즈', '붕어빵', '냉동소고기 한팩', '새우 한팩', '오렌지나 망고'] },
+    { title: '한국가면', date: [2024, 11, 28], text: ['차돌박이삼겹살스테이크짧풍탕수육짜장면김치찌개된장찌개계란찜계란말 이새우죽새우볶음밥계란햄뷰음밥군만두밥미역국소고기무국콩나물돈까스떡볶이우동오뎅계란후라이너구리신라면진라면잔치국수설렁탕치킨후라이드치킨양념치킨마라탕휘귀연어초밥회회덮밥물회마라상권꿔바로우가정식소시지마주서기불닭볶음면로제떡볶이감자튀김햄버거새우장연어장불고기한우랍스타아제마버블티크림파스타토마토파스타치즈크림라면뿌링클굽네치킨배떡쌀국수곱창 소고기돼지고기오리고기전빵밀크티군만두톨만두잡채사탕젤리초콜릿마시멜로우과자아이스크림족발보쌈찜닭마카롱츄러스솜사탕스테이크바베큐서브웨이초코소라빵초코케이크생크림케이크아이스크림케이크베이글햄치즈샌드위치군고구마호박고구마샤브샤브월남샘갈비찜비빔밥타코야끼킹크랩치즈불파스타사과북숭아귤오렌지바나나'] },
   ];
-  const DELETED = [{ title: 'I feel my right ear is bleeding', date: [2025, 3, 4] }];
-  const COUNT = { all: 10, notes: 10, quick: 0, deleted: 1, pinnedQuick: 1 };
+  const DELETED = [{ title: '성호오빠 공원', date: [2025, 3, 4], text: ['챙겨야할것'], items: ['돗자리 (엉호가가져오기로함', '와인?', '샌드위치보단밥같은거', '몰라기억안남 나중에 추가'] }];
+  const COUNT = { all: 4, notes: 4, quick: 0, deleted: 1, pinnedQuick: 1 };
   const TAGS = ['All Tags', '#drawing', '#공부플레이리스트', '#kpop', '#짝사랑'];
   const A = 'assets/notes/';
 
@@ -42,12 +43,16 @@
     if (diff < 7) return dt.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
     return `${d[1]}/${d[2]}/${String(d[0]).slice(2)}`;
   }
-  const section = d => { const n = today() - dayNum(d); return n === 0 ? 'Today' : n === 1 ? 'Yesterday' : n < 7 ? 'Previous 7 Days' : n < 30 ? 'Previous 30 Days' : 'Earlier'; };
-  const preview = n => (n.items || n.text || [])[0] || 'No additional text';
-  const rows = (list, open) => {
-    const groups = {};
-    list.forEach((n, i) => (groups[section(n.date)] ??= []).push(`<div class="nrow"${open ? ` data-note="${i}"` : ''}><b>${n.title}</b><p><span>${label(n.date)}</span>${preview(n)}</p></div>`));
-    return Object.entries(groups).map(([h, r]) => `<h3>${h}</h3><div class="ncard">${r.join('')}</div>`).join('');
+  const section = d => {
+    const n = today() - dayNum(d), y = new Date(today() * 864e5).getUTCFullYear();
+    return n === 0 ? 'Today' : n === 1 ? 'Yesterday' : n < 7 ? 'Previous 7 Days' : n < 30 ? 'Previous 30 Days'
+      : d[0] === y ? new Date(dayNum(d) * 864e5).toLocaleDateString('en-US', { month: 'long', timeZone: 'UTC' }) : String(d[0]);
+  };
+  const preview = n => (n.text || n.items || [])[0] || 'No additional text';
+  const rows = (list, pre = '') => {
+    const groups = new Map();                     // Map keeps order ("2024" would jump first in a plain object)
+    list.forEach((n, i) => { const h = section(n.date); groups.has(h) || groups.set(h, []); groups.get(h).push(`<div class="nrow" data-note="${pre}${i}"><b>${n.title}</b><p><span>${label(n.date)}</span>${preview(n)}</p></div>`); });
+    return [...groups].map(([h, r]) => `<h3>${h}</h3><div class="ncard">${r.join('')}</div>`).join('');
   };
   const bottom = `<div class="nbar"><div class="gb npill nsearch">${I.search}<span>Search</span>${I.mic}</div>${gb(I.compose, 'big')}</div>`;
 
@@ -66,14 +71,15 @@
     <div class="ncard tags">${TAGS.map(t => `<span>${t}</span>`).join('')}</div>
   </div>${bottom}</div>`;
   const list = () => `<div class="nv" data-v="list"><div class="ntop">${gb(I.back, 'back')}${gb(I.more)}</div><div class="nsc">
-    <h1>Notes</h1><p class="nsub">${COUNT.notes} Notes</p>${rows(NOTES, true)}</div>${bottom}</div>`;
+    <h1>Notes</h1><p class="nsub">${COUNT.notes} Notes</p>${rows(NOTES)}</div>${bottom}</div>`;
   const deleted = () => `<div class="nv" data-v="deleted"><div class="ntop">${gb(I.back, 'back')}${gb('Edit', 'txt')}</div><div class="nsc">
     <h1>Recently Deleted</h1><p class="nsub">${COUNT.deleted} Note${COUNT.deleted === 1 ? '' : 's'}</p>
     <p class="ninfo">Deleted notes are removed from your devices after 30 days, which may require Notes to be open. Permanent deletion from iCloud may take up to 40 more days.</p>
-    ${rows(DELETED).replace(/<h3>.*?<\/h3>/g, '')}</div>${bottom}</div>`;
+    ${rows(DELETED, 'd').replace(/<h3>.*?<\/h3>/g, '')}</div>${bottom}</div>`;
   const note = n => `<div class="nv nnote" data-v="note"><div class="ntop">${gb(I.back, 'back')}<span class="sp"></span>${gb(I.undo)}<div class="gb npill">${I.share}${I.more}</div></div><div class="nsc">
     <h1>${n.title}</h1>
-    ${n.items ? `<ul class="chk">${n.items.map((t, i) => `<li data-i="${i}"${n.done?.[i] ? ' class="on"' : ''}><i></i>${t}</li>`).join('')}</ul>` : (n.text || []).map(t => `<p class="ntxt">${t}</p>`).join('')}
+    ${(n.text || []).map(t => `<p class="ntxt">${t}</p>`).join('')}
+    ${n.items ? `<ul class="chk">${n.items.map((t, i) => `<li data-i="${i}"${n.done?.[i] ? ' class="on"' : ''}><i></i>${t}</li>`).join('')}</ul>` : ''}
   </div><div class="nbar"><div class="gb npill tools">${I.list + I.clip + I.pen}</div>${gb(I.compose, 'big')}</div></div>`;
 
   const el = document.createElement('section');
@@ -103,7 +109,7 @@
     const go = t.closest('[data-go]')?.dataset.go;
     if (go) return push(go === 'list' ? list() : deleted());
     const row = t.closest('[data-note]');
-    if (row) { openNote = NOTES[row.dataset.note]; return push(note(openNote)); }
+    if (row) { const id = row.dataset.note; openNote = id[0] === 'd' ? DELETED[id.slice(1)] : NOTES[id]; return push(note(openNote)); }
     const li = t.closest('.chk li');
     if (li) { li.classList.toggle('on'); (openNote.done ??= [])[li.dataset.i] = li.classList.contains('on'); }
   });

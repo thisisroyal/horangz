@@ -286,3 +286,19 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .chk li.on i{background:#e5a913;box-shadow:none}
 .chk li.on i::after{content:"";position:absolute;left:7px;top:3.5px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .ntxt{font-size:19.5px;color:#454545;line-height:1.4;margin-top:24px}
+img{-webkit-user-drag:none}
+.nt{touch-action:none}
+/* KakaoTalk: typing indicator and new-message bar */
+.b.ty{display:flex;align-items:center;gap:3.5px;height:36px;padding:0 12px;background:#8a98a3}
+.b.ty i{width:5px;height:5px;border-radius:50%;background:#f4e553;animation:wv 1.2s infinite}
+.b.ty i:nth-child(2){animation-delay:.15s}.b.ty i:nth-child(3){animation-delay:.3s}
+@keyframes wv{0%,45%,100%{transform:none}22%{transform:translateY(-5px)}}
+.kt-new{position:absolute;z-index:3;left:8px;right:8px;bottom:98px;height:36px;display:flex;align-items:center;gap:8px;padding:0 14px 0 8px;border-radius:18px;background:rgba(247,247,249,.97);box-shadow:0 2px 12px rgba(0,0,0,.12);font-size:16.5px;color:#191919;text-align:left}
+.kt-new[hidden]{display:none}
+.kt-new img{width:28px;height:28px;border-radius:11px;object-fit:cover}
+.kt-new b{font-weight:700;white-space:nowrap}
+.kt-new span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kt-new svg{width:22px;height:22px;stroke-width:2.2}
+.nrow{cursor:pointer}
+.ntxt+.chk{margin-top:14px}
+.ntxt{word-break:break-all}

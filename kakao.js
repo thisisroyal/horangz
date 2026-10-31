@@ -38,6 +38,7 @@
     smile: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#d9d9d9"/><circle cx="12" cy="12" r="7.6" fill="none" stroke="#191919" stroke-width="1.8"/><circle cx="9.4" cy="10.6" r="1.2" fill="#191919"/><circle cx="14.6" cy="10.6" r="1.2" fill="#191919"/><path d="M8.9 13.6c1.6 1.9 4.6 1.9 6.2 0" fill="none" stroke="#191919" stroke-width="1.8" stroke-linecap="round"/></svg>',
     send: '<svg viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5 12 6l5.5 5.5" fill="none" stroke="#191919" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     chev: ic('<path d="m9 5 7 7-7 7"/>'),
+    down: ic('<path d="m5 9 7 7 7-7"/>'),
     pic: ic('<rect x="3" y="4.5" width="18" height="15" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-9 8.5"/>'),
     call: '<svg viewBox="0 0 24 24"><path d="M21 16.5v3a1.8 1.8 0 0 1-2 1.8A17.8 17.8 0 0 1 2.7 5 1.8 1.8 0 0 1 4.5 3h3a1.8 1.8 0 0 1 1.8 1.5c.1.9.4 1.8.7 2.6a1.8 1.8 0 0 1-.4 1.9L8.4 10.2a14.4 14.4 0 0 0 5.4 5.4l1.2-1.2a1.8 1.8 0 0 1 1.9-.4c.8.3 1.7.6 2.6.7a1.8 1.8 0 0 1 1.5 1.8z" fill="#e5483c"/></svg>',
   };
@@ -101,11 +102,27 @@
       const { k, obj, date } = queue.shift(), msgs = data[k];
       if (date) msgs.push(date);
       msgs.push(obj);
-      const viewing = roomKey === k && roomEl.classList.contains('on') && current === APPVIEWS.kakaotalk;
-      if (viewing) refreshRoom(true);
-      else { roomUnread[k] = (roomUnread[k] || 0) + 1; unread++; notify(k, obj); }
+      if (inRoom(k)) {
+        const seen = atBottom();
+        typing = null; refreshRoom(true);
+        if (!seen) newMsg(obj);
+      } else { roomUnread[k] = (roomUnread[k] || 0) + 1; unread++; notify(k, obj); }
       badges(); refreshList();
     }
+    // typing indicator: the next sender in the open room is "typing" for ~2.5s before the message lands
+    const nx = queue[0], who = nx && inRoom(nx.k) && atBottom() && nx.at - simNow() < 2600 ? nx.obj.sender : null;
+    if (who !== typing) { typing = who; refreshRoom(true); }
+  }
+  let typing = null;
+  const inRoom = k => roomKey === k && roomEl?.classList.contains('on') && current === APPVIEWS.kakaotalk;
+  const msgBox = () => roomEl.querySelector('.kt-msgs');
+  const atBottom = () => { const b = msgBox(); return b.scrollHeight - b.scrollTop - b.clientHeight < 40; };
+  function newMsg(m) {
+    const b = roomEl.querySelector('.kt-new');
+    b.querySelector('img').src = P(m.sender);
+    b.querySelector('b').textContent = PEOPLE[m.sender]?.[0] || m.sender;
+    b.querySelector('span').textContent = m.mediaKey ? 'Photo' : m.lines[0];
+    b.hidden = false;
   }
   function badges() {
     setBadge('kakaotalk', unread);
@@ -120,24 +137,28 @@
   const nt = document.createElement('div');
   nt.className = 'nt';
   nt.innerHTML = `<div class="nt-av"><img alt=""><img class="nt-app" src="assets/icons/kakaotalk.webp" alt=""></div><div class="nt-tx"><b></b><p></p></div><time>now</time>`;
-  let ntTimer, ntRoom;
+  let ntTimer;
   function notify(k, m) {
     const who = PEOPLE[m.sender]?.[0] || m.sender, text = m.mediaKey ? 'Photo' : m.lines[0];
     nt.querySelector('.nt-av img').src = P(m.sender);
     nt.querySelector('b').textContent = PEOPLE[k] ? who : k;
     nt.querySelector('p').textContent = PEOPLE[k] ? text : `${who}: ${text}`;
     (body.dataset.state === 'land' ? $('#player') : $('#screen')).append(nt);
-    ntRoom = k;
     nt.classList.remove('pop'); void nt.offsetWidth;
     nt.classList.add('on', 'pop');
     clearTimeout(ntTimer); ntTimer = setTimeout(() => nt.classList.remove('on'), 5000);
   }
-  nt.addEventListener('click', () => {
-    nt.classList.remove('on');
-    go('port');
-    if (current !== APPVIEWS.kakaotalk) openApp('kakaotalk');
-    tab('chats'); openRoom(ntRoom);
-  });
+  // swipe the banner up to dismiss it
+  let sw = null;
+  const up = e => { const k = parseFloat(dev.style.getPropertyValue('--k')) || 1; return (nt.parentElement.id === 'player' ? e.clientX - sw.x : sw.y - e.clientY) / k; };
+  nt.addEventListener('pointerdown', e => { sw = { x: e.clientX, y: e.clientY }; nt.setPointerCapture(e.pointerId); nt.style.transition = 'none'; clearTimeout(ntTimer); });
+  nt.addEventListener('pointermove', e => { if (sw) { const d = up(e); nt.style.transform = `translateY(${d > 0 ? -d : -d / 4}px)`; } });
+  const end = e => {
+    if (!sw) return;
+    const d = up(e); sw = null; nt.style.transition = nt.style.transform = '';
+    if (d > 30) nt.classList.remove('on'); else ntTimer = setTimeout(() => nt.classList.remove('on'), 3000);
+  };
+  nt.addEventListener('pointerup', end); nt.addEventListener('pointercancel', end);
 
   /* ----- room helpers ----- */
   const members = k => [...new Set(data[k].filter(m => m.sender && m.sender !== ME).map(m => m.sender))];
@@ -203,9 +224,13 @@
       <div class="kt-roomv">
         <div class="kt-rh"><button class="back">${I.back}<span class="kt-unread">${unread}</span></button><h2></h2><div class="kt-icons">${I.search + I.phone + I.menu}</div></div>
         <div class="kt-msgs"></div>
+        <button class="kt-new" hidden><img alt=""><b></b><span></span>${I.down}</button>
         <form class="kt-in"><button type="button">${I.plus}</button><label class="kt-field"><input enterkeyhint="send" autocomplete="off" placeholder="Enter a message">${I.smile}</label><button type="button" class="hash">#</button><button class="send" aria-label="Send">${I.send}</button></form>
       </div>`;
     roomEl = el.querySelector('.kt-roomv');
+    const nb = roomEl.querySelector('.kt-new'), box = msgBox();
+    nb.addEventListener('click', () => { nb.hidden = true; box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' }); });
+    box.addEventListener('scroll', () => { if (atBottom()) nb.hidden = true; }, { passive: true });
     el.querySelector('.kt-nav').addEventListener('click', e => { const t = e.target.closest('[data-tab]')?.dataset.tab; t && tab(t); });
     el.addEventListener('click', e => { const r = e.target.closest('.kt-room'); r && openRoom(r.dataset.room); });
     roomEl.querySelector('.back').addEventListener('click', closeRoom);
@@ -258,6 +283,7 @@
   }
   function openRoom(k) {
     roomKey = k;
+    typing = null; roomEl.querySelector('.kt-new').hidden = true;
     unread -= roomUnread[k] || 0; roomUnread[k] = 0; badges(); refreshList();
     const n = PEOPLE[k] ? 0 : members(k).length + 1;
     roomEl.querySelector('h2').innerHTML = esc(title(k)) + (n ? ` <i>${n}</i>` : '');
@@ -265,8 +291,8 @@
     refreshRoom();
   }
   function refreshRoom(keep) {
-    const box = roomEl.querySelector('.kt-msgs'), atEnd = !keep || box.scrollHeight - box.scrollTop - box.clientHeight < 80;
-    box.innerHTML = render(roomKey);
+    const box = msgBox(), atEnd = !keep || atBottom();
+    box.innerHTML = render(roomKey) + (typing ? `<div class="m g t n"><img class="av" src="${P(typing)}" alt=""><span class="who">${esc(PEOPLE[typing]?.[0] || typing)}</span><div class="b ty"><i></i><i></i><i></i></div></div>` : '');
     if (atEnd) box.scrollTop = box.scrollHeight;
   }
   function closeRoom(instant) {

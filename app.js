@@ -101,3 +101,24 @@ $('#grid').addEventListener('click', e => {
   const id = e.target.closest('.app')?.dataset.app;
   if (id === 'watcha') go('land'); else if (id) openApp(id);
 });
+
+/* ===== Mouse drag scrolls lists like a finger would (desktop) ===== */
+(() => {
+  let d = null;
+  addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button || e.target.closest('input,.nt')) return;
+    const sc = e.target.closest('.sc,.kt-list,.kt-msgs,.nsc');
+    if (sc) d = { sc, y: e.clientY, top: sc.scrollTop, moved: false };
+  });
+  addEventListener('pointermove', e => {
+    if (!d) return;
+    const dy = (e.clientY - d.y) / (parseFloat(dev.style.getPropertyValue('--k')) || 1);
+    if (Math.abs(dy) > 4) d.moved = true;
+    if (d.moved) d.sc.scrollTop = d.top - dy;
+  });
+  const stop = e => e.stopPropagation();
+  addEventListener('pointerup', () => {
+    if (d?.moved) { addEventListener('click', stop, true); setTimeout(() => removeEventListener('click', stop, true)); }
+    d = null;
+  });
+})();
