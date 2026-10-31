@@ -97,6 +97,7 @@ function closeApp(instant) {
 const setBadge = (id, n) => { const b = $(`[data-app=${id}] .badge`); if (b) b.textContent = n; };
 $('#homebtn').addEventListener('click', () => go('port'));
 $('#hb').addEventListener('click', () => closeApp());
+$('#dock').addEventListener('click', e => { const id = e.target.closest('.app')?.dataset.app; id && openApp(id); });
 $('#grid').addEventListener('click', e => {
   const id = e.target.closest('.app')?.dataset.app;
   if (id === 'watcha') go('land'); else if (id) openApp(id);
