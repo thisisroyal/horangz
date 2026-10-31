@@ -9,7 +9,7 @@ const I = 'assets/icons/';
 const APPS = [
   ['weather', 'Weather'], ['calendar', 'Calendar', { type: 'cal' }], ['photos', 'Photos'], ['camera', 'Camera'],
   ['appstore', 'App Store'], ['notes', 'Notes'], ['clock', 'Clock', { type: 'clk' }], ['productivity', 'Productivity', { folder: ['prod0', 'prod1'] }],
-  ['settings', 'Settings', { badge: 1 }], ['utilities', 'Utilities', { folder: [...Array(9)].map((_, i) => 'util' + i) }], ['watcha', 'WATCHA', { type: 'ph' }], ['duolingo', 'Duolingo'],
+  ['settings', 'Settings', { badge: 1 }], ['utilities', 'Utilities', { folder: [...Array(9)].map((_, i) => 'util' + i) }], ['watcha', 'WATCHA'], ['duolingo', 'Duolingo'],
   ['kakaotalk', 'KakaoTalk', { badge: 957 }], ['instagram', 'Instagram'], ['gmail', 'Gmail'], ['googlemaps', 'Google Maps'],
 ];
 const DOCK = [['phone'], ['safari'], ['messages', '', { badge: 163 }], ['ytmusic']];
@@ -27,7 +27,6 @@ function icon([id, name, o = {}]) {
   <line class="h" x1="50" y1="53" x2="50" y2="29" stroke="#000" stroke-width="3.6" stroke-linecap="round"/>
   <line class="m" x1="50" y1="54" x2="50" y2="15" stroke="#000" stroke-width="2.4" stroke-linecap="round"/>
   <line class="s" x1="50" y1="60" x2="50" y2="12" stroke="#f19a38" stroke-width="1.2"/><circle cx="50" cy="50" r="2.2" fill="#f19a38"/></svg>`;
-  else if (o.type === 'ph') inner = '';
   else if (o.folder) inner = o.folder.map((m, i) =>
     `<img src="${I}mini/${m}.webp" style="left:${MINI[i % 3]}px;top:${MINI[i / 3 | 0]}px" alt="" draggable="false">`).join('');
   else inner = `<img src="${I + id}.webp" alt="" draggable="false">`;

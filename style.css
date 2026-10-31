@@ -73,7 +73,7 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .cal span{display:block;font-size:39px;font-weight:300;line-height:.9;letter-spacing:-1px}
 .clk{background:linear-gradient(#f4f4f4,#dcdcdc)}
 .clk svg{width:100%;height:100%}
-.ph{background:#ff0558}
+
 
 .search{position:absolute;bottom:147px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:5px;height:30px;padding:0 13px 0 11px;border-radius:15px;font-size:13px;font-weight:600}
 .search svg{width:13px;height:13px;fill:none}
