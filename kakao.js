@@ -12,8 +12,20 @@
   const PEOPLE = {
     '김동': ['김동', 'kimdong'], '비니비니언니': ['비니비니 언니', 'bini'], '상히기니': ['상히기니', 'gini'],
     '성호오빠': ['성호 오빠', 'sungho'], '운학이': ['운학이', 'woonhak'], '제로언니': ['제로 언니', 'zero'],
-    '한동': ['한동', 'handong'], 'Myeong': ['Myeong', 'myeong'],
+    '한동': ['한동', 'handong'], 'Myeong': ['Myeong', 'myeong'], '엄마': ['엄마', 'mom'], '아빠': ['아빠', 'dad'],
   };
+  // rows in the Chats list that only show (not clickable): family room and official accounts
+  const O = 'assets/kakao/official/';
+  const STATIC = [
+    { title: '가족', n: 3, av: ['mom', 'dad'], when: [2025, 3, 5, '오후 7:12'], text: 'Photo' },
+    { title: '카카오톡 선물하기', icon: 'gift', when: [2025, 3, 4, '오후 3:27'], text: '주문이 완료되었습니다.\n자세한 사항은 주문내역을 통해 확인할 수 있습니다.' },
+    { ad: true, title: '[메디힐] 수분흔적세럼 1+1 리필기획 특가', icon: 'mediheal', text: '메디힐' },
+    { title: '카카오이모티콘', icon: 'emoticon', when: [2025, 3, 3, '오전 11:02'], text: '(광고)1년권의 기회, 곧 끝나요⏰' },
+    { title: '다이소멤버십', icon: 'daiso', when: [2025, 3, 2, '오후 1:45'], text: '[다이소몰] 보유 중이신 쿠폰의 유효기간을 안내드립니다. ...', badge: 10 },
+    { title: '멜론', icon: 'melon', when: [2025, 3, 1, '오후 6:30'], text: '(광고)❤️4,600으로 6개월 음악 무제한' },
+  ];
+  const PLUS = [['photo', 'Photo'], ['camera', 'Camera'], ['call', 'Call'], ['gift', 'Gift Shop'], ['money', 'Money'], ['location', 'Location'],
+    ['friendsloc', 'Friends<br>Location'], ['music', 'Music'], ['minigames', 'Mini Games'], ['file', 'File'], ['contacts', 'Contacts'], ['voicememo', 'Voice Memo']];
   const ROOMS = ['호랑이들', '11층', 'My girls', '김동', '한동', '성호오빠', '제로언니', 'Myeong', '상히기니'];
   const MEDIA = {                                // mediaKey -> [file in assets/media, width, height]
     MEDIA_1: ['drama', 900, 437], MEDIA_2: ['woonhak-selfie', 675, 900], MEDIA_3: ['handong-elevator', 675, 900],
@@ -260,9 +272,15 @@
   }
   // last row is cut and fades out: there seems to be more, but the list stops here
   const MORE = '<div class="kt-fade"></div>';     // thin fade over the bottom edge of the last row
+  const staticRow = r => r.ad
+    ? `<div class="kt-room kt-ad"><img class="oi" src="${O + r.icon}.webp" alt=""><div class="tx"><div class="nm"><b>${esc(r.title)}</b></div><p class="pv"><i class="adt">AD</i>${esc(r.text)}</p></div><span class="buy">구매하기</span></div>`
+    : `<div class="kt-room kt-static">${r.icon ? `<img class="oi" src="${O + r.icon}.webp" alt="">` : `<div class="av av2">${r.av.map(a => `<img src="assets/profile/${a}.jpg" alt="">`).join('')}</div>`}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(r.title)}</b>${r.n ? `<i>${r.n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${r.badge ? `<b class="ur">${r.badge}</b>` : ''}</div>`;
   function list() {
-    const rows = ROOMS.map(k => ({ k, ...lastInfo(k) })).sort((a, b) => b.stamp - a.stamp);
-    return `<div class="kt-list">${rows.map(r => {
+    const st = STATIC.filter(r => !r.ad).map(r => { const [y, mo, d, time] = r.when; return { ...r, y, mo, d, time, stamp: Date.UTC(y, mo - 1, d) / 6e4 + mins(time) }; });
+    const rows = [...ROOMS.map(k => ({ k, ...lastInfo(k) })), ...st].sort((a, b) => b.stamp - a.stamp);
+    const ad = STATIC.find(r => r.ad), gi = rows.findIndex(r => r.icon === 'gift');
+    return `<div class="kt-list">${rows.map((r, i) => {
+        if (!r.k) return staticRow(r) + (i === gi ? staticRow(ad) : '');
         const n = PEOPLE[r.k] ? 0 : members(r.k).length + 1;
         return `<div class="kt-room" data-room="${esc(r.k)}">${groupAv(r.k)}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(title(r.k))}</b>${n ? `<i>${n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${roomUnread[r.k] ? `<b class="ur">${roomUnread[r.k]}</b>` : ''}</div>`;
       }).join('')}${MORE}</div>`;
@@ -274,8 +292,9 @@
       <div class="kt-roomv">
         <div class="kt-rh"><button class="back">${I.back}<span class="kt-unread">${unread}</span></button><h2></h2><div class="kt-icons">${I.search + I.phone + I.menu}</div></div>
         <div class="kt-msgs"></div>
+        <div class="kt-plus">${PLUS.map(([f, t]) => `<span><img src="assets/kakao/plus/${f}.webp" alt="">${t}</span>`).join('')}</div>
         <button class="kt-new" hidden><img alt=""><b></b><span></span>${I.down}</button>
-        <form class="kt-in"><button type="button">${I.plus}</button><label class="kt-field"><input enterkeyhint="send" autocomplete="off" placeholder="Enter a message">${I.smile}</label><button type="button" class="hash">#</button><button class="send" aria-label="Send">${I.send}</button></form>
+        <form class="kt-in"><button type="button" class="plus" aria-label="More">${I.plus}</button><label class="kt-field"><input enterkeyhint="send" autocomplete="off" placeholder="Enter a message">${I.smile}</label><button type="button" class="hash">#</button><button class="send" aria-label="Send">${I.send}</button></form>
       </div>`;
     roomEl = el.querySelector('.kt-roomv');
     const nb = roomEl.querySelector('.kt-new'), box = msgBox();
@@ -283,10 +302,17 @@
     nb.addEventListener('click', () => { nb.hidden = true; box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' }); });
     box.addEventListener('scroll', () => { if (atBottom()) nb.hidden = true; }, { passive: true });
     el.querySelector('.kt-nav').addEventListener('click', e => { const t = e.target.closest('[data-tab]')?.dataset.tab; t && tab(t); });
-    el.addEventListener('click', e => { const r = e.target.closest('.kt-room'); r && openRoom(r.dataset.room); });
+    el.addEventListener('click', e => { const r = e.target.closest('.kt-room[data-room]'); r && openRoom(r.dataset.room); });
     roomEl.querySelector('.back').addEventListener('click', closeRoom);
     const form = roomEl.querySelector('form'), input = form.querySelector('input');
     input.addEventListener('input', () => roomEl.classList.toggle('typing', !!input.value.trim()));
+    // "+" opens the attachment panel (turns into ×); typing closes it
+    const plus = (on = !roomEl.classList.contains('plus-on')) => {
+      roomEl.classList.toggle('plus-on', on);
+      const b = msgBox(); if (on) setTimeout(() => b.scrollTo({ top: b.scrollHeight, behavior: 'smooth' }), 250);
+    };
+    form.querySelector('.plus').addEventListener('click', () => { if (!roomEl.classList.contains('plus-on')) input.blur(); plus(); });
+    input.addEventListener('focus', () => plus(false));
     form.addEventListener('submit', e => { e.preventDefault(); send(input.value); input.value = ''; roomEl.classList.remove('typing'); input.focus(); });
     keyboardLift(input);
   }
@@ -361,7 +387,7 @@
 
   function closeRoom(instant) {
     if (!roomEl) return;
-    roomEl.querySelector('input').blur();
+    roomEl.querySelector('input').blur(); roomEl.classList.remove('plus-on');
     roomEl.style.transition = instant === true ? 'none' : '';
     roomEl.classList.remove('on');
     if (instant === true) { roomEl.offsetWidth; roomEl.style.transition = ''; }
