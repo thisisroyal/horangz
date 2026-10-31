@@ -40,8 +40,9 @@ $('.wx-cond').textContent = WEATHER.cond;
 $('.wx-hl').textContent = `H:${WEATHER.hi}° L:${WEATHER.lo}°`;
 
 /* ===== Clock (starts at START on every visit, runs in real time) ===== */
+const SPEED = 1.5;                                 // phone clock runs 1.5x faster than real time
 const t0 = performance.now();
-const simNow = () => new Date(START + performance.now() - t0);
+const simNow = () => new Date(START + (performance.now() - t0) * SPEED);
 const fmt = o => new Intl.DateTimeFormat('en-US', { timeZone: TZ, ...o });
 const fTime = fmt({ hour: 'numeric', minute: '2-digit', hour12: true });
 const fParts = fmt({ weekday: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23' });
@@ -56,7 +57,7 @@ function tick() {
   calB.textContent = p.weekday; calN.textContent = p.day;
   const s = +p.second, m = +p.minute + s / 60;
   rot(hS, s * 6); rot(hM, m * 6); rot(hH, (+p.hour % 12 + m / 60) * 30);
-  setTimeout(tick, 1000 - ((performance.now() - t0) % 1000));
+  setTimeout(tick, (1000 - ((performance.now() - t0) * SPEED % 1000)) / SPEED);
 }
 tick();
 

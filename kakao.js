@@ -113,7 +113,7 @@
       badges(); refreshList();
     }
     // typing indicator: the next sender in the open room is "typing" for ~2.5s before the message lands
-    const nx = queue[0], real = nx && inRoom(nx.k) && atBottom() && nx.at - simNow() < 2600 ? nx.obj.sender : null;
+    const nx = queue[0], real = nx && inRoom(nx.k) && atBottom() && nx.at - simNow() < 2600 * SPEED ? nx.obj.sender : null;
     // 성호 keeps starting and stopping typing in his room from 10:38 until 10:45
     const who = real || (tease && inRoom(FIRST) && simNow() < START + 7 * 6e4 ? FIRST : null);
     if (who !== typing) {
@@ -232,7 +232,7 @@
       <div class="kt-hr"></div>
       <p class="kt-label">Friends ${names.length}<span><b>Alphabetical</b><em>·</em>Updates</span></p>
       <div class="kt-row"><img src="${K}recommend.webp" alt=""><div><p>Recommended Friends</p></div><span class="cnt">91${I.chev}</span></div>
-      ${cutLast(names.map(n => `<div class="kt-row"><img src="${P(n)}" alt=""><div><p>${esc(PEOPLE[n][0])}</p></div></div>`))}
+      ${names.map(n => `<div class="kt-row"><img src="${P(n)}" alt=""><div><p>${esc(PEOPLE[n][0])}</p></div></div>`).join('')}${MORE}
     </div>`;
   }
   function chats() {
@@ -244,13 +244,13 @@
     </div>`;
   }
   // last row is cut and fades out: there seems to be more, but the list stops here
-  const cutLast = rows => rows.slice(0, -1).join('') + `<div class="kt-cut">${rows.at(-1)}</div>`;
+  const MORE = `<div class="kt-cut"><div class="kt-row"><img src="assets/profile/bini.jpg" alt=""><div></div></div></div>`;
   function list() {
     const rows = ROOMS.map(k => ({ k, ...lastInfo(k) })).sort((a, b) => b.stamp - a.stamp);
-    return `<div class="kt-list">${cutLast(rows.map(r => {
+    return `<div class="kt-list">${rows.map(r => {
         const n = PEOPLE[r.k] ? 0 : members(r.k).length + 1;
         return `<div class="kt-room" data-room="${esc(r.k)}">${groupAv(r.k)}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(title(r.k))}</b>${n ? `<i>${n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${roomUnread[r.k] ? `<b class="ur">${roomUnread[r.k]}</b>` : ''}</div>`;
-      }))}</div>`;
+      }).join('')}${MORE}</div>`;
   }
 
   function build() {
