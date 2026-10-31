@@ -421,5 +421,6 @@ img{-webkit-user-drag:none}
 .gm-acts svg{width:19px;height:19px}
 .gm-mail .gm-nav span{width:62px}
 .gm-from p{white-space:nowrap}.gm-from>svg{margin-left:14px}
-#gmail .gm-sc{overflow:hidden}
-.gm-fade{position:absolute;z-index:1;left:0;right:0;bottom:82px;height:42px;background:linear-gradient(rgba(255,255,255,0),#fff 92%);pointer-events:none}
+.gm-sc{padding-bottom:0}
+.gm-fade{position:relative;height:64px;overflow:hidden;pointer-events:none}
+.gm-fade::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.35),#fff 85%)}
