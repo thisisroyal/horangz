@@ -137,14 +137,17 @@
   /* ----- banner notification ----- */
   const nt = document.createElement('div');
   nt.className = 'nt';
-  nt.innerHTML = `<div class="nt-av"><img alt=""><img class="nt-app" src="assets/icons/kakaotalk.webp" alt=""></div><div class="nt-tx"><b></b><p></p></div><time>now</time>`;
+  nt.innerHTML = `<div class="nt-av"><img alt=""><img class="nt-app" src="assets/icons/kakaotalk.webp" alt=""></div><div class="nt-tx"><b></b><b class="rm"></b><p></p></div><time>now</time>`;
   let ntTimer, ntRoom;
   function notify(k, m) {
     ntRoom = k;
     const who = PEOPLE[m.sender]?.[0] || m.sender, text = m.mediaKey ? 'Photo' : m.lines[0];
     nt.querySelector('.nt-av img').src = P(m.sender);
-    nt.querySelector('b').textContent = PEOPLE[k] ? who : k;
-    nt.querySelector('p').textContent = PEOPLE[k] ? text : `${who}: ${text}`;
+    const rm = nt.querySelector('.rm');           // group chats: sender / room name / message
+    nt.querySelector('b').textContent = who;
+    rm.textContent = PEOPLE[k] ? '' : k; rm.hidden = !!PEOPLE[k];
+    nt.querySelector('p').textContent = text;
+    nt.classList.toggle('grp', !PEOPLE[k]);
     (body.dataset.state === 'land' ? $('#player') : $('#screen')).append(nt);
     nt.classList.remove('pop'); void nt.offsetWidth;
     nt.classList.add('on', 'pop');

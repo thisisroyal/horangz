@@ -385,3 +385,6 @@ img{-webkit-user-drag:none}
 .gm-nav span.on{background:#c9e6fc;color:#001d35}
 .gm-nav svg{width:24px;height:24px}
 .gm-nav b{position:absolute;left:34px;top:-2px;height:16px;padding:0 5px;border-radius:8px;background:#b3261e;color:#fff;font-size:11px;line-height:16px;font-weight:500}
+.nt.grp{height:86px}
+.nt-tx .rm{font-weight:600}
+.nt-tx .rm[hidden]{display:none}
