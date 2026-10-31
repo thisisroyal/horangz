@@ -258,7 +258,7 @@
       <p class="kt-label">AI 1</p>
       <div class="kt-row"><img src="${K}kanana.webp" alt=""><div><p>Kanana</p><small>Kakao AI, one step ahead in your chats</small></div></div>
       <div class="kt-hr"></div>
-      <p class="kt-label">Friends ${names.length}<span><b>Alphabetical</b><em>·</em>Updates</span></p>
+      <p class="kt-label">Friends 132<span><b>Alphabetical</b><em>·</em>Updates</span></p>
       <div class="kt-row"><img src="${K}recommend.webp" alt=""><div><p>Recommended Friends</p></div><span class="cnt">91${I.chev}</span></div>
       ${names.map(n => `<div class="kt-row"><img src="${P(n)}" alt=""><div><p>${esc(PEOPLE[n][0])}</p></div></div>`).join('')}${MORE}
     </div>`;
