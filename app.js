@@ -9,10 +9,10 @@ const I = 'assets/icons/';
 const APPS = [
   ['weather', 'Weather'], ['calendar', 'Calendar', { type: 'cal' }], ['photos', 'Photos'], ['camera', 'Camera'],
   ['appstore', 'App Store'], ['notes', 'Notes'], ['clock', 'Clock', { type: 'clk' }], ['productivity', 'Productivity', { folder: ['prod0', 'prod1'] }],
-  ['settings', 'Settings', { badge: 1 }], ['utilities', 'Utilities', { folder: [...Array(9)].map((_, i) => 'util' + i) }], ['watcha', 'WATCHA'], ['duolingo', 'Duolingo'],
-  ['kakaotalk', 'KakaoTalk', { badge: 957 }], ['instagram', 'Instagram'], ['gmail', 'Gmail'], ['googlemaps', 'Google Maps'],
+  ['settings', 'Settings'], ['utilities', 'Utilities', { folder: [...Array(9)].map((_, i) => 'util' + i) }], ['watcha', 'WATCHA'], ['duolingo', 'Duolingo'],
+  ['kakaotalk', 'KakaoTalk', { badge: 530 }], ['instagram', 'Instagram'], ['gmail', 'Gmail'], ['googlemaps', 'Google Maps'],
 ];
-const DOCK = [['phone'], ['safari'], ['messages', '', { badge: 163 }], ['ytmusic']];
+const DOCK = [['phone'], ['safari'], ['messages'], ['ytmusic']];
 
 /* ===== Render ===== */
 const $ = s => document.querySelector(s);
@@ -89,12 +89,18 @@ function fit() {
 addEventListener('resize', fit);
 fit();
 
-/* ===== Home button: landscape player -> home screen ===== */
-$('#homebtn').addEventListener('click', () => {
-  if (body.dataset.state !== 'land') return;
-  const show = () => { body.dataset.state = 'port'; root.classList.remove('turn'); fit(); root.classList.add('enter'); };
+/* ===== Switch between player (landscape) and home (portrait) ===== */
+function go(state) {
+  if (body.dataset.state === state) return;
+  const show = () => {
+    body.dataset.state = state; root.classList.remove('turn'); fit();
+    root.classList.toggle('enter', state === 'port');
+  };
   if (FULL()) return show();
-  root.classList.add('turn');                    // desktop: turn the phone upright
-  set('--r', '-90deg'); set('--k', deskK(402, 874));
+  const land = state === 'land';                 // desktop: turn the phone
+  root.classList.add('turn');
+  set('--r', land ? '90deg' : '-90deg'); set('--k', land ? deskK(874, 402) : deskK(402, 874));
   setTimeout(show, 560);
-});
+}
+$('#homebtn').addEventListener('click', () => go('port'));
+$('[data-app=watcha]').addEventListener('click', () => go('land'));
