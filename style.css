@@ -489,7 +489,8 @@ img{-webkit-user-drag:none}
 .kt-msgs>.ty-row{transition:opacity .25s ease,transform .25s ease}
 .kt-msgs>.ty-row.out{opacity:0;transform:translateY(-4px)}
 /* lists stop at a half-visible, fading last row */
-.kt-fade{position:relative;height:14px;margin-top:-14px;background:linear-gradient(rgba(255,255,255,0),#fff);pointer-events:none}
+.kt-fade{position:relative;height:22px;margin-top:-22px;background:linear-gradient(rgba(255,255,255,0),#fff 95%);pointer-events:none}
+.kt-list .kt-fade{height:26px;margin-top:-26px}
 /* chat rooms: the oldest messages fade under the header */
 .kt-msgs{padding-top:100px}
 .kt-msgs::before{content:"";position:absolute;z-index:1;left:0;right:0;top:100px;height:88px;background:linear-gradient(#abc1d1 12%,rgba(171,193,209,0));pointer-events:none}
