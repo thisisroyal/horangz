@@ -3,13 +3,13 @@
 (() => {
   const G = 'assets/gmail/';
   const MAILS = [
-    { av: 'info', from: 'info', date: 'Oct 20', subj: 'Your order 52603 is on its way', snip: '📦 Your order is on its way Hi Hyeonju, Your order is on its way and will arrive soon.', read: true },
+    { av: 'info', from: 'info', date: 'Oct 20', subj: 'Your order 52603 is on its way', snip: '📦 Your order is on its way Hi Yeoju, Your order is on its way and will arrive soon.', read: true },
     { av: 'dnr', from: 'do-not-reply', date: 'Oct 20', subj: 'Sharp Instructional Shops Checkout Return Reminder', snip: 'Dear Yeoju Eun: As a reminder, the following items are due back soon.', read: true },
     { av: 'handshake', from: 'Handshake', date: 'Oct 20', subj: '"Your first job alert": Arts of Life - Chicago', snip: 'Handshake JL New matches for your saved search' },
     { promo: true },
     { av: 'handshake', from: 'Handshake', date: 'Oct 20', subj: '"Search on 2/23/2026": SAIC Teaching Assistant', snip: 'Handshake JL New matches for your saved search' },
     { av: 'amazon', from: 'Amazon Marketplace', date: 'Oct 20', subj: 'Yeoju Eun, will you rate your transaction with us?', snip: 'Hi Yeoju Eun, Rate your experience with the seller' },
-    { av: 'p', from: 'Presidential Towers', date: 'Oct 20', subj: 'Presidential Towers | Give Blood, Give Life', snip: 'presidential-towers Dear Hyeonju, We\'re excited to host a blood drive', pdf: 'Blood drive.pdf' },
+    { av: 'p', from: 'Presidential Towers', date: 'Oct 20', subj: 'Presidential Towers | Give Blood, Give Life', snip: 'presidential-towers Dear Yeoju, We\'re excited to host a blood drive', pdf: 'Blood drive.pdf' },
     { av: 'linkedin', from: 'LinkedIn', date: 'Oct 19', subj: 'Learning Spotlight: Cybersecurity Starter Kit', snip: 'Practical Skills for Staying Secure' },
     { av: 'linkedin', from: 'LinkedIn', date: 'Oct 19', subj: 'Yeoju, you appeared in 4 searches this week', snip: 'See who\'s looking at your profile' },
   ];
@@ -34,7 +34,7 @@
   const el = document.createElement('section');
   el.id = 'gmail'; el.className = 'appview';
   el.innerHTML = `<div class="gm-sc">
-      <div class="gm-search">${I.menu}<span>Search in mail</span><img src="${G}me.webp" alt=""></div>
+      <div class="gm-search">${I.menu}<span>Search in mail</span><img src="${G}profile.webp" alt=""></div>
       <p class="gm-lbl">All inboxes</p>
       ${MAILS.map(row).join('')}
     </div>

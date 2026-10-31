@@ -30,7 +30,7 @@
   const el = document.createElement('section');
   el.id = 'ytm'; el.className = 'appview';
   el.innerHTML = `<div class="ym-sc">
-      <header class="ym-head"><h1>보관함</h1>${I.hist}${I.search}<img src="${A}avatar.webp" alt=""></header>
+      <header class="ym-head"><h1>보관함</h1>${I.hist}${I.search}<img src="${A}profile.webp" alt=""></header>
       <div class="ym-chips">${CHIPS.map(c => `<span>${c}</span>`).join('')}</div>
       <div class="ym-sort"><span>최근 활동${I.down}</span>${I.grid}</div>
       ${LIST.map(r => `<div class="ym-row"><img src="${A}${r.img}.webp" alt=""${r.round ? ' class="rd"' : ''}><div><b>${r.title}</b><p>${r.sub}</p></div>${I.more}</div>`).join('')}
