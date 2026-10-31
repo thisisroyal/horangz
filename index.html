@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iPhone 17 Pro Web Simulator (6.3" 19.6:9)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- CDN 지연 문제 해결: 같은 깃허브 저장소에 있는 파일을 직접 불러오도록 상대경로 적용 -->
+  <script src="./chatData.js"></script>
+
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; background-color: #121212; margin: 0; }
+    .app-screen { transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease; transform: scale(0.95) translateY(20px); opacity: 0; pointer-events: none; z-index: 50; }
+    .app-screen.active { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+    .bg-polka { background-color: #4f4744; background-image: radial-gradient(#d6ccc9 2.5px, transparent 2.5px); background-size: 24px 24px; }
+    .home-slider { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .home-slider::-webkit-scrollbar { display: none; }
+    .home-page { min-width: 100%; height: 100%; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; }
+    .app-icon { width: 62px; height: 62px; border-radius: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+    .app-label { font-size: 11.5px; color: white; margin-top: 5px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+    .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; padding: 1px 6px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.1); z-index: 10; }
+    .folder-icon { background: rgba(180, 180, 180, 0.4); backdrop-filter: blur(10px); padding: 6px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 3px; }
+    .folder-mini-app { background: #fff; border-radius: 3px; width: 100%; height: 100%; }
+    .kt-group-profile { position: relative; width: 44px; height: 44px; }
+    .kt-group-img-1 { position: absolute; top: 0; left: 0; width: 28px; height: 28px; border-radius: 10px; border: 2px solid white; z-index: 1; object-fit: cover; background-color: #e5e7eb; }
+    .kt-group-img-2 { position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; border-radius: 10px; border: 2px solid white; z-index: 2; object-fit: cover; background-color: #d1d5db; }
+    input { user-select: auto; -webkit-user-select: auto; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 md:p-6">
+  <div class="w-full max-w-[402px] h-screen md:h-[876px] bg-black md:rounded-[55px] shadow-2xl relative overflow-hidden flex flex-col border-[10px] border-[#2c2c2e]">
+    
+    <!-- Status Bar -->
+    <div class="absolute top-3 left-1/2 -translate-x-1/2 w-[124px] h-[33px] bg-black rounded-full z-[70] flex items-center justify-between px-3 pointer-events-none"><div class="w-2.5 h-2.5 bg-[#1a1a1a] rounded-full"></div><div class="w-3 h-3 bg-[#0d0d2b] rounded-full border border-white/10"></div></div>
+    <div id="status-bar" class="h-12 pt-3 px-8 flex justify-between items-center text-white text-[14px] font-semibold z-[70] relative pointer-events-none transition-colors duration-300">
+      <span>12:34</span>
+      <div class="flex items-center space-x-1.5 opacity-90">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.57 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
+        <div id="battery-icon" class="w-[24px] h-[13px] border border-white/80 rounded-[4px] p-[1px] flex items-center transition-colors duration-300"><div id="battery-level" class="h-full w-[85%] bg-white rounded-[2px] transition-colors duration-300"></div></div>
+      </div>
+    </div>
+
+    <!-- HOME SCREEN -->
+    <div id="home-container" class="flex-1 relative overflow-hidden bg-polka z-10">
+      <div class="absolute bottom-[-20px] -right-4 w-[290px] h-[290px] bg-[#1a1a1a] rounded-tl-full rounded-bl-full z-0 pointer-events-none flex items-end justify-center pb-12">
+        <div class="w-16 h-16 bg-white rounded-full relative mb-12 mr-10 shadow-inner"><div class="absolute top-2 right-2 w-8 h-8 bg-black rounded-full"></div></div>
+        <div class="w-16 h-16 bg-white rounded-full relative mb-12 mr-6 shadow-inner"><div class="absolute top-2 left-2 w-8 h-8 bg-black rounded-full"></div></div>
+        <div class="absolute -top-6 left-12 w-20 h-20 bg-[#f4d8cc] rounded-tl-full -rotate-12 -z-10 border-[8px] border-[#1a1a1a]"></div>
+      </div>
+      <div id="home-slider" class="home-slider relative z-10">
+        <div class="home-page">
+          <div class="space-y-[22px] pt-1">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-[#242632] rounded-[22px] p-4 text-white flex flex-col justify-between h-[158px] shadow-md border border-white/5"><div class="flex justify-between items-start text-[13px] font-semibold text-white/90"><span>Chicago ↗</span></div><div class="flex flex-col justify-end"><span class="text-[46px] font-light leading-none -ml-1">11°</span><div class="text-[12px] font-medium text-white/80 mt-1"><p>Clear</p><p>H:20° L:8°</p></div></div></div>
+              <div class="bg-white rounded-[22px] p-4 text-gray-900 flex flex-col h-[158px] shadow-md"><div class="w-8 h-8 bg-[#ff6b6b] rounded-[10px] flex items-center justify-center mb-3 text-white text-lg">📥</div><p class="text-[13px] font-semibold leading-tight text-gray-800">Congratulations, your inbox is empty!</p></div>
+            </div>
+            <div class="grid grid-cols-4 gap-x-3 gap-y-[22px]">
+              <div class="flex flex-col items-center"><div class="app-icon bg-[#4a90e2] text-white text-2xl">⛅</div><span class="app-label">Weather</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon bg-white flex-col"><span class="text-[10px] text-red-500 font-bold uppercase mt-1">Wed</span><span class="text-3xl font-light text-black leading-none mt-[-2px]">21</span></div><span class="app-label">Calendar</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon bg-white text-2xl">🌸</div><span class="app-label">Photos</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon bg-gray-300 text-2xl">📷</div><span class="app-label">Camera</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon bg-[#007aff] text-white font-bold text-3xl">A</div><span class="app-label">App Store</span></div>
+              <div class="flex flex-col items-center relative cursor-pointer group" onclick="openApp('notes-app', 'light')">
+                <div class="app-icon bg-white flex-col group-active:scale-95 transition-transform"><div class="w-full h-[15px] bg-[#ffcc00] border-b border-gray-200"></div><div class="w-full flex-1 flex flex-col justify-center space-y-1.5 px-2"><div class="w-full h-0.5 bg-gray-200 rounded-full"></div><div class="w-full h-0.5 bg-gray-200 rounded-full"></div><div class="w-3/4 h-0.5 bg-gray-200 rounded-full"></div></div></div>
+                <span class="app-label">Notes</span>
+              </div>
+              <div class="flex flex-col items-center relative"><div class="app-icon bg-white text-2xl">📋</div><span class="badge">5</span><span class="app-label">Reminders</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon bg-black text-white text-2xl">🕒</div><span class="app-label">Clock</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon folder-icon"><div class="folder-mini-app bg-blue-500"></div><div class="folder-mini-app bg-gray-400"></div></div><span class="app-label">Productivity</span></div>
+              <div class="flex flex-col items-center relative"><div class="app-icon bg-[#8e8e93] text-white text-2xl">⚙️</div><span class="badge">1</span><span class="app-label">Settings</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon folder-icon"><div class="folder-mini-app bg-gray-700"></div><div class="folder-mini-app bg-green-500"></div></div><span class="app-label">Utilities</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon bg-[#7a42f4] text-2xl">🐣</div><span class="app-label">Epop</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon bg-[#58cc02] text-2xl">🦉</div><span class="app-label">Duolingo</span></div>
+              <div class="flex flex-col items-center"><div class="app-icon bg-[#d97757] text-white font-bold text-2xl">✴️</div><span class="app-label">Claude</span></div>
+            </div>
+          </div>
+          <div class="flex justify-center items-center space-x-2 pb-2"><span id="dot-0" class="w-1.5 h-1.5 bg-white rounded-full transition-colors"></span><span id="dot-1" class="w-1.5 h-1.5 bg-white/40 rounded-full transition-colors"></span></div>
+        </div>
+        <div class="home-page">
+          <div class="grid grid-cols-4 gap-x-3 gap-y-[22px] pt-1">
+            <div class="flex flex-col items-center relative cursor-pointer group" onclick="openApp('katalk-app', 'light')">
+              <div class="app-icon bg-[#FEE500] group-active:scale-95 transition-transform"><svg class="w-[36px] h-[36px] text-[#3c1e1e]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3C6.477 3 2 6.477 2 10.75c0 2.76 1.83 5.185 4.588 6.558l-.946 3.493c-.083.307.25.556.518.378l4.127-2.735c.563.07 1.14.106 1.713.106 5.523 0 10-3.477 10-7.75S17.523 3 12 3z"/></svg><span class="font-bold text-[#3c1e1e] text-[9.5px] absolute font-sans mb-1">TALK</span></div>
+              <span class="badge" style="right: -8px;">11</span><span class="app-label">KakaoTalk</span>
+            </div>
+            <div class="flex flex-col items-center relative"><div class="app-icon bg-[#1da1f2] text-white text-2xl">🐦</div><span class="badge">3</span><span class="app-label">Twitter</span></div>
+            <div class="flex flex-col items-center"><div class="app-icon bg-gradient-to-tr from-[#f09433] via-[#e6683c] to-[#bc1888] text-white text-2xl">📸</div><span class="app-label">Instagram</span></div>
+            <div class="flex flex-col items-center relative"><div class="app-icon bg-white text-red-600 text-3xl">▶️</div><span class="badge">33</span><span class="app-label">YouTube</span></div>
+            <div class="flex flex-col items-center cursor-pointer group" onclick="openApp('gmail-app', 'light')">
+              <div class="app-icon bg-white group-active:scale-95 transition-transform"><svg class="w-[42px] h-[42px]" viewBox="0 0 24 24"><path fill="#4285F4" d="M22 6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6z"/><path fill="#EA4335" d="M12 13L2 6v12h20V6l-10 7z"/><path fill="#C5221F" d="M12 13L2 6h20l-10 7z"/></svg></div>
+              <span class="app-label">Gmail</span>
+            </div>
+          </div>
+          <div class="flex justify-center items-center space-x-2 pb-2"><span id="dot-0-p2" class="w-1.5 h-1.5 bg-white/40 rounded-full transition-colors"></span><span id="dot-1-p2" class="w-1.5 h-1.5 bg-white rounded-full transition-colors"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCK BAR -->
+    <div class="h-[106px] px-[22px] bg-white/25 backdrop-blur-xl flex justify-between items-center z-10 border-t border-white/10 pb-5 relative">
+      <div class="app-icon bg-[#34c759] text-white text-3xl">📞</div>
+      <div class="app-icon bg-white cursor-pointer group active:scale-95 transition-transform" onclick="openApp('google-app', 'light')">
+        <svg class="w-[50px] h-[50px]" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="#1e90ff" /><path d="M50,15 A35,35 0 1,1 15,50 A35,35 0 0,1 50,15" fill="none" stroke="white" stroke-width="3" stroke-dasharray="4 6"/><path d="M42,58 L65,35 L58,42 L35,65 Z" fill="#ff3b30"/><path d="M42,58 L35,65 L58,42 Z" fill="white"/></svg>
+      </div>
+      <div class="app-icon bg-[#34c759] relative text-white text-3xl">💬<span class="badge" style="right: -8px;">163</span></div>
+      <div class="app-icon bg-[#ff2d55] text-white text-3xl">🎵</div>
+    </div>
+    
+    <div id="home-indicator" onclick="closeAllApps()" class="absolute bottom-2 left-1/2 -translate-x-1/2 w-[138px] h-1.5 bg-white/80 rounded-full z-[100] cursor-pointer active:scale-95 transition-colors duration-300"></div>
+
+    <!-- APP: GOOGLE SEARCH -->
+    <div id="google-app" class="app-screen absolute inset-0 bg-white flex flex-col overflow-hidden">
+      <div class="pt-14 px-4 py-2 flex items-center justify-between border-b border-gray-100 bg-white z-20 relative">
+        <div class="flex items-center space-x-3"><div class="flex flex-col"><span class="text-[14px] font-bold text-black leading-tight">Google</span></div></div>
+        <button class="bg-[#e8f0fe] text-blue-600 text-[12px] font-bold px-4 py-1.5 rounded-full">OPEN</button>
+      </div>
+      <div id="google-home-view" class="flex-1 flex flex-col h-full bg-white relative">
+        <div class="flex-1 overflow-y-auto pb-[70px]">
+          <div class="flex justify-center mt-12 mb-6"><h1 class="text-[46px] font-medium tracking-tight font-sans"><span class="text-[#4285F4]">G</span><span class="text-[#EA4335]">o</span><span class="text-[#FBBC05]">o</span><span class="text-[#4285F4]">g</span><span class="text-[#34A853]">l</span><span class="text-[#EA4335]">e</span></h1></div>
+          <div onclick="openGoogleSearch()" class="mx-5 bg-white border border-gray-200 rounded-[24px] px-4 py-3 flex items-center shadow-[0_2px_5px_rgba(0,0,0,0.08)] cursor-pointer">
+            <div class="flex-1 text-[17px] text-gray-500 font-light pl-1">Search Google or type a URL</div>
+          </div>
+        </div>
+      </div>
+      <div id="google-search-view" class="flex-1 flex flex-col bg-white hidden z-30">
+        <div class="px-4 py-3 flex items-center border-b border-gray-100 bg-white">
+          <svg onclick="closeGoogleSearch()" class="w-5 h-5 text-black mr-3 cursor-pointer" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <input type="text" id="google-search-input" placeholder="Search Google or type a URL" class="flex-1 bg-transparent outline-none text-[18px] text-black placeholder-gray-500" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- APP: KAKAOTALK -->
+    <div id="katalk-app" class="app-screen absolute inset-0 bg-white flex flex-col">
+       
+       <!-- 1. 친구 탭 -->
+       <div id="kt-view-friends" class="flex-1 flex flex-col h-full bg-white overflow-y-auto pb-[60px]">
+        <div class="pt-14 px-4 pb-2 flex justify-between items-center bg-white sticky top-0 z-20">
+          <h1 class="text-[22px] font-bold text-black">은여주</h1>
+        </div>
+        <div class="px-4 flex space-x-2 mt-1 mb-4"><span class="bg-black text-white px-4 py-1.5 rounded-full text-[14px] font-bold">Friends 8</span></div>
+        <div class="border-t border-gray-100/60 pt-4 px-4 space-y-4">
+            
+            <!-- chatData.js에 있는 키 값과 대소문자, 띄어쓰기를 100% 동일하게 일치시킨 onclick 이벤트 -->
+            <div onclick="openChatRoom('Myeong')" class="flex items-center space-x-3 cursor-pointer"><img src="./myeong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>M</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">Myeong</span></div>
+            
+            <div onclick="openChatRoom('김동')" class="flex items-center space-x-3 cursor-pointer"><img src="./kimdong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>김</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">김동</span></div>
+            
+            <div onclick="openChatRoom('한동')" class="flex items-center space-x-3 cursor-pointer"><img src="./handong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>한</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">한동</span></div>
+            
+            <div onclick="openChatRoom('성호오빠')" class="flex items-center space-x-3 cursor-pointer"><img src="./sunghopa.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>성</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">성호 오빠</span></div>
+            
+            <div onclick="openChatRoom('상히기니')" class="flex items-center space-x-3 cursor-pointer"><img src="./gini.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>상</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">상히기니</span></div>
+            
+            <div onclick="openChatRoom('비니비니언니')" class="flex items-center space-x-3 cursor-pointer"><img src="./bini.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>비</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">비니비니 언니</span></div>
+            
+            <div onclick="openChatRoom('제로언니')" class="flex items-center space-x-3 cursor-pointer"><img src="./zero.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>제</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">제로 언니</span></div>
+            
+            <div onclick="openChatRoom('운학이')" class="flex items-center space-x-3 cursor-pointer"><img src="./woonhak.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>운</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">운학이</span></div>
+        </div>
+      </div>
+
+      <!-- 2. 채팅 탭 (그룹 채팅방 추가) -->
+      <div id="kt-view-chats" class="flex-1 flex flex-col h-full bg-white overflow-y-auto pb-[60px] hidden">
+        <div class="pt-14 px-4 pb-2"><h1 class="text-[24px] font-bold text-black">Chats</h1></div>
+        <div class="px-4 space-y-4 pt-2">
+          <div onclick="openChatRoom('호랑이들', 9)" class="flex items-center justify-between cursor-pointer"><div class="flex items-center space-x-3"><div class="kt-group-profile"><img src="./myeong.jpg" class="kt-group-img-1" onerror="this.style.display='none'"/><img src="./kimdong.jpg" class="kt-group-img-2" onerror="this.style.display='none'"/></div><span class="text-[15px] font-medium text-black">호랑이들</span></div></div>
+          
+          <div onclick="openChatRoom('My girls', 3)" class="flex items-center justify-between cursor-pointer"><div class="flex items-center space-x-3"><div class="w-[44px] h-[44px] rounded-[16px] bg-pink-100 flex items-center justify-center text-xl">👯‍♀️</div><span class="text-[15px] font-medium text-black">My girls</span></div></div>
+          
+          <div onclick="openChatRoom('11층', 3)" class="flex items-center justify-between cursor-pointer"><div class="flex items-center space-x-3"><div class="w-[44px] h-[44px] rounded-[16px] bg-blue-100 flex items-center justify-center text-xl">🏢</div><span class="text-[15px] font-medium text-black">11층</span></div></div>
+        </div>
+      </div>
+
+      <!-- 하단 네비게이션 바 -->
+      <div id="kt-bottom-bar" class="absolute bottom-0 w-full h-[60px] bg-[#fafafa] border-t border-gray-200 flex justify-around items-center z-40">
+        <button onclick="navKt('friends')" id="kt-tab-friends" class="text-black font-bold text-sm">Friends</button>
+        <button onclick="navKt('chats')" id="kt-tab-chats" class="text-gray-400 font-bold text-sm">Chats</button>
+      </div>
+
+      <!-- 3. 실제 채팅이 보여지는 대화방 뷰 -->
+      <div id="kt-view-room" class="absolute inset-0 bg-[#abc1d1] z-50 flex flex-col hidden">
+        <div class="pt-14 px-4 py-2 flex items-center bg-[#abc1d1]/95 sticky top-0"><button onclick="navKt('chats')" class="text-gray-800 text-[24px] w-12">‹</button><h1 id="chat-room-title" class="font-bold text-black text-[16px]"></h1></div>
+        
+        <!-- 말풍선이 생성되는 본문 컨테이너 -->
+        <div id="chat-messages-area" class="flex-1 overflow-y-auto p-4 space-y-2 pb-16"></div>
+        
+        <div class="absolute bottom-0 w-full h-[50px] bg-[#f5f5f5] flex items-center px-3 space-x-2">
+          <div class="flex-1 bg-white h-[36px] rounded-full px-4 flex items-center border border-gray-200"><span class="text-[14px] text-gray-400">Type a message</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APP: GMAIL -->
+    <div id="gmail-app" class="app-screen absolute inset-0 bg-white flex flex-col pb-6">
+      <div class="pt-14 px-4 py-2 border-b border-gray-100 flex items-center"><button onclick="closeApp('gmail-app')" class="text-gray-700 text-2xl w-12">‹</button><span class="font-bold text-[17px] text-red-600">Gmail</span></div>
+      <div class="p-4 flex-1 space-y-3"><div class="flex items-center space-x-3 p-3 bg-red-50 rounded-[14px]"><div class="w-10 h-10 rounded-full bg-red-600 text-white font-bold flex items-center justify-center">G</div><div><p class="text-[15px] font-bold">Google Team</p><p class="text-[13px] text-gray-600">Security alert</p></div></div></div>
+    </div>
+
+    <!-- APP: NOTES -->
+    <div id="notes-app" class="app-screen absolute inset-0 bg-[#f2f2f7] flex flex-col pb-6">
+      <div id="notes-view-folders" class="flex-1 flex flex-col h-full bg-[#f2f2f7]">
+        <div class="pt-14 px-4 py-2 flex justify-center"><span class="font-bold text-[17px]">Folders</span></div>
+        <div class="px-5 pt-2"><div class="bg-white rounded-[14px] text-[17px]"><div onclick="navigateToNotes('main')" class="p-3.5 flex justify-between cursor-pointer border-b border-gray-100"><span>📁 Notes</span><span class="text-gray-400">222 〉</span></div><div onclick="navigateToNotes('recently-deleted')" class="p-3.5 flex justify-between cursor-pointer"><span>🗑️ Recently Deleted</span><span class="text-gray-400">1 〉</span></div></div></div>
+      </div>
+      <div id="notes-view-main" class="flex-1 flex flex-col h-full bg-[#f2f2f7] hidden">
+        <div class="pt-14 px-4 pb-2"><button onclick="navigateToNotes('folders')" class="text-amber-500 text-2xl w-12">‹</button></div>
+        <div class="px-5 pb-2"><h1 class="text-[34px] font-bold">Notes</h1></div>
+        <div class="px-5"><div class="bg-white rounded-[14px]"><div onclick="navigateToNotes('detail-마트')" class="p-3.5 cursor-pointer"><p class="font-bold">Grocery List</p><p class="text-[14px] text-gray-400">Seaweed, Noodles</p></div></div></div>
+      </div>
+      <div id="notes-view-recently-deleted" class="flex-1 flex flex-col h-full bg-[#f2f2f7] hidden">
+        <div class="pt-14 px-4 py-2"><button onclick="navigateToNotes('folders')" class="text-amber-500 text-2xl">‹</button></div>
+        <div class="px-5 pb-2"><h1 class="text-[34px] font-bold">Deleted</h1></div>
+      </div>
+      <div id="notes-view-detail" class="flex-1 flex flex-col h-full bg-white hidden">
+        <div class="pt-14 px-4 py-2"><button onclick="navigateToNotes('main')" class="text-amber-500 text-2xl">‹</button></div>
+        <div class="p-6"><h1 class="text-[28px] font-bold">H Mart</h1><div class="pt-2 text-[17px]"><p>✅ Seaweed</p><p>✅ Spicy Noodles</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 자바스크립트 로직 -->
+  <script>
+    function setTheme(mode) {
+      const statusBar = document.getElementById('status-bar');
+      const homeIndicator = document.getElementById('home-indicator');
+      if (mode === 'light') { statusBar.classList.replace('text-white', 'text-black'); homeIndicator.classList.replace('bg-white/80', 'bg-black');
+      } else { statusBar.classList.replace('text-black', 'text-white'); homeIndicator.classList.replace('bg-black', 'bg-white/80'); }
+    }
+
+    function openApp(appId, theme = 'dark') {
+      document.getElementById(appId).classList.add('active');
+      setTheme(theme);
+    }
+    
+    function closeAllApps() {
+      document.querySelectorAll('.app-screen').forEach(app => app.classList.remove('active'));
+      setTheme('dark');
+      resetGoogleSearch();
+      setTimeout(() => { navKt('friends'); navigateToNotes('folders'); }, 300);
+    }
+    
+    function closeApp(appId) { document.getElementById(appId).classList.remove('active'); setTheme('dark'); }
+    function openGoogleSearch() { document.getElementById('google-home-view').classList.add('hidden'); document.getElementById('google-search-view').classList.remove('hidden'); document.getElementById('google-search-input').focus(); }
+    function closeGoogleSearch() { document.getElementById('google-search-view').classList.add('hidden'); document.getElementById('google-home-view').classList.remove('hidden'); document.getElementById('google-search-input').value = ''; }
+    function resetGoogleSearch() { closeGoogleSearch(); }
+
+    function navKt(viewName) {
+      document.getElementById('kt-view-room').classList.add('hidden');
+      if (viewName === 'friends') {
+        document.getElementById('kt-view-friends').classList.remove('hidden'); document.getElementById('kt-view-chats').classList.add('hidden');
+        document.getElementById('kt-tab-friends').classList.replace('text-gray-400', 'text-black'); document.getElementById('kt-tab-chats').classList.replace('text-black', 'text-gray-400');
+      } else {
+        document.getElementById('kt-view-friends').classList.add('hidden'); document.getElementById('kt-view-chats').classList.remove('hidden');
+        document.getElementById('kt-tab-friends').classList.replace('text-black', 'text-gray-400'); document.getElementById('kt-tab-chats').classList.replace('text-gray-400', 'text-black');
+      }
+    }
+    
+    // 💡 [핵심] chatData.js 파일의 구조를 완벽하게 불러오는 새로운 함수
+    function openChatRoom(name, count = '') {
+      // 상단 타이틀 세팅
+      const titleEl = document.getElementById('chat-room-title');
+      titleEl.innerHTML = count ? `${name} <span class="text-xs text-gray-500">${count}</span>` : name;
+      
+      // 대화창 본문 영역
+      const messageArea = document.getElementById('chat-messages-area');
+      messageArea.innerHTML = '';
+      
+      // window.chatData에서 데이터 불러오기
+      const messages = (window.chatData && window.chatData[name]) ? window.chatData[name] : [];
+
+      if (messages.length === 0) {
+        messageArea.innerHTML = '<div class="text-center text-gray-500 text-xs py-10">대화 내용이 없습니다.</div>';
+      } else {
+        messages.forEach(msg => {
+          // 1) 날짜 구분선 처리
+          if (msg.type === 'date') {
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'flex justify-center my-4';
+            dateDiv.innerHTML = `<span class="bg-black/10 text-gray-600 text-[11px] px-3 py-1 rounded-full">${msg.date}</span>`;
+            messageArea.appendChild(dateDiv);
+          } 
+          // 2) 일반 메시지 처리
+          else {
+            const msgDiv = document.createElement('div');
+            
+            // 텍스트(배열)를 HTML로 변환
+            let linesHtml = '';
+            if (msg.lines && msg.lines.length > 0) {
+              linesHtml = msg.lines.map(line => `<div class="mb-0.5 last:mb-0">${line}</div>`).join('');
+            }
+
+            // 미디어(사진)가 있을 경우 처리
+            if (msg.mediaKey) {
+               linesHtml = `<div class="bg-black/5 w-full h-[120px] rounded-md mb-1 flex items-center justify-center overflow-hidden border border-black/10 text-[10px] text-gray-500"><span class="px-2 text-center">[이미지: ${msg.mediaCaption || '사진'}]</span></div>` + linesHtml;
+            }
+
+            // 부재중 전화(call) 처리
+            if (msg.type === 'call') {
+               linesHtml = `📞 <strong>${msg.lines[0]}</strong>`;
+            }
+
+            // 내가 보낸 메시지
+            if (msg.isMe) {
+              msgDiv.className = 'flex justify-end items-end space-x-1 space-x-reverse mb-2';
+              msgDiv.innerHTML = `
+                <div class="flex flex-col items-end">
+                  <div class="bg-[#FEE500] text-black px-3 py-2 rounded-l-lg rounded-br-lg text-[14px] shadow-sm max-w-[220px] break-words">
+                    ${linesHtml}
+                  </div>
+                </div>
+                <span class="text-[10px] text-gray-500 mb-0.5 ml-1">${msg.time}</span>
+              `;
+            } 
+            // 상대방이 보낸 메시지
+            else {
+              msgDiv.className = 'flex items-start space-x-2 mb-2';
+              msgDiv.innerHTML = `
+                <div class="w-9 h-9 rounded-[12px] bg-gray-300 flex-shrink-0 flex items-center justify-center text-white text-[13px] font-bold shadow-sm overflow-hidden">
+                  ${msg.sender.charAt(0)}
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[11px] text-gray-600 mb-1 ml-1">${msg.sender}</span>
+                  <div class="flex items-end space-x-1">
+                    <div class="bg-white text-black px-3 py-2 rounded-r-lg rounded-bl-lg text-[14px] shadow-sm max-w-[220px] break-words">
+                      ${linesHtml}
+                    </div>
+                    <span class="text-[10px] text-gray-500 mb-0.5">${msg.time}</span>
+                  </div>
+                </div>
+              `;
+            }
+            messageArea.appendChild(msgDiv);
+          }
+        });
+      }
+      
+      // 뷰 전환
+      document.getElementById('kt-view-friends').classList.add('hidden'); 
+      document.getElementById('kt-view-chats').classList.add('hidden'); 
+      document.getElementById('kt-view-room').classList.remove('hidden');
+      
+      // 화면이 전환되고 DOM이 생성될 시간을 아주 살짝 준 뒤 맨 밑으로 스크롤
+      setTimeout(() => {
+        messageArea.scrollTop = messageArea.scrollHeight;
+      }, 10);
+    }
+
+    function navigateToNotes(viewName) {
+      ['main', 'folders', 'recently-deleted', 'detail'].forEach(v => {
+        const el = document.getElementById(v === 'detail' ? 'notes-view-detail' : `notes-view-${v}`);
+        if(el) el.classList.add('hidden');
+      });
+      if (viewName === 'main') document.getElementById('notes-view-main').classList.remove('hidden');
+      if (viewName === 'folders') document.getElementById('notes-view-folders').classList.remove('hidden');
+      if (viewName === 'recently-deleted') document.getElementById('notes-view-recently-deleted').classList.remove('hidden');
+      if (viewName.startsWith('detail-')) document.getElementById('notes-view-detail').classList.remove('hidden');
+    }
+
+    const slider = document.getElementById('home-slider');
+    let isDown = false, startX, scrollLeft;
+    slider.addEventListener('mousedown', (e) => { isDown = true; slider.style.scrollSnapType = 'none'; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+    slider.addEventListener('mouseleave', () => { if(!isDown) return; isDown = false; slider.style.scrollSnapType = 'x mandatory'; snapToClosest(); });
+    slider.addEventListener('mouseup', () => { if(!isDown) return; isDown = false; slider.style.scrollSnapType = 'x mandatory'; snapToClosest(); });
+    slider.addEventListener('mousemove', (e) => { if(!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; slider.scrollLeft = scrollLeft - ((x - startX) * 2); });
+    function snapToClosest() { const pageIndex = Math.round(slider.scrollLeft / slider.clientWidth); slider.scrollTo({ left: pageIndex * slider.clientWidth, behavior: 'smooth' }); }
+  </script>
+</body>
+</html>
