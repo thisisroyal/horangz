@@ -20,6 +20,7 @@
     MEDIA_4: ['gini-blanket', 900, 676], MEDIA_NEMO: ['nemo', 416, 900], MEDIA_DORY: ['dory', 416, 900],
     MEDIA_SOCKS: ['socks', 665, 900], MEDIA_MORNING_MEME: ['morning-meme', 394, 507],
     MEDIA_CORPSE_BRIDE: ['corpse-bride', 528, 900], MEDIA_SUNGHO_PHOTO: ['sungho-photo', 675, 900],
+    MEDIA_PULDDEUNDAEJI: ['pulddeundaeji', 620, 900],
   };
   const K = 'assets/kakao/', P = n => `assets/profile/${PEOPLE[n]?.[1] || 'bini'}.jpg`;
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
@@ -110,7 +111,10 @@
     setBadge('kakaotalk', unread);
     el.querySelectorAll('.kt-unread').forEach(b => b.textContent = unread);
   }
-  const refreshList = () => { const c = el.querySelector('.kt-chats'); if (c) c.querySelector('.kt-list').outerHTML = list(); };
+  const refreshList = () => {
+    const l = el.querySelector('.kt-list'); if (!l) return;
+    const y = l.scrollTop; l.outerHTML = list(); el.querySelector('.kt-list').scrollTop = y;
+  };
 
   /* ----- banner notification ----- */
   const nt = document.createElement('div');
@@ -194,7 +198,7 @@
   }
 
   function build() {
-    el.innerHTML = friends() + chats() +
+    el.innerHTML = '<div class="kt-sb"></div>' + friends() + chats() +
       `<nav class="kt-nav">${NAV.map((s, i) => `<span data-tab="${['friends', 'chats'][i] || ''}"${i ? '' : ' class="on"'}>${s}${i === 1 ? `<b class="kt-unread">${unread}</b>` : i === 2 ? `<b>${OPEN_CHAT}</b>` : i === 4 ? '<i class="dot"></i>' : ''}</span>`).join('')}</nav>
       <div class="kt-roomv">
         <div class="kt-rh"><button class="back">${I.back}<span class="kt-unread">${unread}</span></button><h2></h2><div class="kt-icons">${I.search + I.phone + I.menu}</div></div>
