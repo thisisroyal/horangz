@@ -41,6 +41,7 @@ $('.wx-hl').textContent = `H:${WEATHER.hi}° L:${WEATHER.lo}°`;
 
 /* ===== Clock (starts at START on every visit, runs in real time) ===== */
 const t0 = performance.now();
+const simNow = () => new Date(START + performance.now() - t0);
 const fmt = o => new Intl.DateTimeFormat('en-US', { timeZone: TZ, ...o });
 const fTime = fmt({ hour: 'numeric', minute: '2-digit', hour12: true });
 const fParts = fmt({ weekday: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23' });
@@ -49,7 +50,7 @@ const [hH, hM, hS] = ['.h', '.m', '.s'].map(c => $('.clk ' + c));
 const rot = (el, deg) => el.setAttribute('transform', `rotate(${deg} 50 50)`);
 
 function tick() {
-  const d = new Date(START + performance.now() - t0);
+  const d = simNow();
   const p = Object.fromEntries(fParts.formatToParts(d).map(x => [x.type, x.value]));
   sbTime.textContent = fTime.format(d).replace(/\s?[AP]M$/, '');
   calB.textContent = p.weekday; calN.textContent = p.day;
@@ -59,48 +60,50 @@ function tick() {
 }
 tick();
 
-/* ===== Fit to viewport ===== */
-const root = document.documentElement, body = document.body, dev = $('#device'), home = $('#home');
-const FULL = () => matchMedia('(pointer:coarse)').matches || Math.min(innerWidth, innerHeight) <= 520;
+/* ===== Fit the framed phone to the viewport ===== */
+const root = document.documentElement, body = document.body, dev = $('#device');
+const DW = 436, DH = 908;                         // frame size incl. bezel
+const touch = matchMedia('(pointer:coarse)');
 const set = (k, v) => dev.style.setProperty(k, v);
-const deskK = (w, h) => Math.min(1, (innerHeight - 32) / (h + 24), (innerWidth - 32) / (w + 24));
 
 function fit() {
-  const land = body.dataset.state === 'land', full = FULL();
-  const vw = innerWidth, vh = innerHeight;
-  let W, H, k, r = 0;
-  root.classList.toggle('full', full);
-  if (full) {
-    k = Math.min(vw, vh) / 402;                // short side = 402 units
-    const long = Math.max(vw, vh) / k;
-    [W, H] = land ? [long, 402] : [402, long];
-    if (land !== vw > vh) r = 90;                // rotate when orientation differs
-  } else {
-    [W, H] = land ? [874, 402] : [402, 874];
-    k = deskK(W, H);
-  }
-  set('--w', W + 'px'); set('--h', H + 'px'); set('--k', k); set('--r', r + 'deg');
-  if (!land) { // shrink icon area on short screens so it never overlaps the dock
-    const short = H < 820;
-    home.classList.toggle('short', short);
-    home.style.setProperty('--c', Math.min(1, (H - (short ? 193 : 249)) / 619));
-  }
+  const land = body.dataset.state === 'land', vw = innerWidth, vh = innerHeight;
+  // landscape player: turn the phone sideways unless a touch device is held upright
+  const r = land && !(touch.matches && vh > vw) ? -90 : 0;
+  const [w, h] = r ? [DH, DW] : [DW, DH], m = touch.matches ? 12 : 32;
+  set('--r', r + 'deg');
+  set('--k', Math.min(1, (vw - m) / w, (vh - m) / h));
 }
 addEventListener('resize', fit);
 fit();
+requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('ready')));
 
-/* ===== Switch between player (landscape) and home (portrait) ===== */
+/* ===== Navigation: player (landscape) <-> home <-> apps ===== */
+const APPVIEWS = {};                               // id -> { el, open(), close() } registered by app modules
+let current = null;
+
 function go(state) {
   if (body.dataset.state === state) return;
-  const show = () => {
-    body.dataset.state = state; root.classList.remove('turn'); fit();
-    root.classList.toggle('enter', state === 'port');
-  };
-  if (FULL()) return show();
-  const land = state === 'land';                 // desktop: turn the phone
-  root.classList.add('turn');
-  set('--r', land ? '90deg' : '-90deg'); set('--k', land ? deskK(874, 402) : deskK(402, 874));
-  setTimeout(show, 560);
+  closeApp(true);
+  body.dataset.state = state;
+  root.classList.toggle('enter', state === 'port');
+  fit();
+}
+function openApp(id) {
+  const a = APPVIEWS[id];
+  if (!a || current) return;
+  current = a; a.open?.();
+  a.el.classList.remove('instant'); a.el.classList.add('open'); root.classList.toggle('dark-ui', !!a.light);
+}
+function closeApp(instant) {
+  if (!current) return;
+  const a = current; current = null;
+  a.el.classList.toggle('instant', !!instant); a.el.classList.remove('open');
+  root.classList.remove('dark-ui'); a.close?.();
 }
 $('#homebtn').addEventListener('click', () => go('port'));
-$('[data-app=watcha]').addEventListener('click', () => go('land'));
+$('#hb').addEventListener('click', () => closeApp());
+$('#grid').addEventListener('click', e => {
+  const id = e.target.closest('.app')?.dataset.app;
+  if (id === 'watcha') go('land'); else if (id) openApp(id);
+});

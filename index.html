@@ -8,20 +8,21 @@
 <link rel="preload" href="assets/start/watcha.webp" as="image">
 <link rel="stylesheet" href="style.css">
 <script src="app.js" defer></script>
+<script src="kakao.js" defer></script>
 </head>
 <body data-state="land">
 <div id="device">
+  <i class="btn l" style="top:150px;height:32px"></i><i class="btn l" style="top:212px;height:62px"></i><i class="btn l" style="top:288px;height:62px"></i>
+  <i class="btn r" style="top:250px;height:98px"></i><i class="btn r" style="top:560px;height:58px"></i>
+  <div class="bezel">
   <div id="screen">
     <section id="player">
-      <div class="stage">
-        <img src="assets/start/watcha.webp" alt="" draggable="false">
-        <button class="play" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M7 4.2v15.6a1 1 0 0 0 1.5.9l12.3-7.8a1 1 0 0 0 0-1.8L8.5 3.3A1 1 0 0 0 7 4.2z"/></svg></button>
-      </div>
+      <img src="assets/start/watcha.webp" alt="" draggable="false">
+      <button class="play" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M7 4.2v15.6a1 1 0 0 0 1.5.9l12.3-7.8a1 1 0 0 0 0-1.8L8.5 3.3A1 1 0 0 0 7 4.2z"/></svg></button>
       <button id="homebtn" class="hbar" aria-label="Home"></button>
     </section>
 
     <section id="home">
-      <div class="page">
         <div class="widgets">
           <figure class="widget">
             <div id="wx" class="wx">
@@ -39,11 +40,10 @@
           </figure>
         </div>
         <div id="grid" class="grid"></div>
-      </div>
       <div class="search glass"><svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m10.3 10.3 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Search</div>
       <div id="dock" class="dock glass"></div>
-      <div class="hbar"></div>
     </section>
+    <div id="apps"></div>
 
     <header id="status">
       <div class="sb-left"><span class="sb-time"></span><svg class="sb-bell" viewBox="0 0 20 20"><path d="M10 2.5a5 5 0 0 0-5 5v3.2L3.6 13a.6.6 0 0 0 .5.9h11.8a.6.6 0 0 0 .5-.9L15 10.7V7.5a5 5 0 0 0-5-5zM8 15.2a2 2 0 0 0 4 0z"/><path d="M3 2l14.5 16" stroke="#000" stroke-width="3.4"/><path d="M3 2l14.5 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -54,6 +54,8 @@
       </div>
     </header>
     <div class="island"></div>
+    <button id="hb" class="hbar" aria-label="Home"></button>
+  </div>
   </div>
 </div>
 </body>
