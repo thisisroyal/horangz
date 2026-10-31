@@ -162,10 +162,17 @@
     if (!sw) return;
     const d = up(e), tap = e.type === 'pointerup' && Math.hypot(e.clientX - sw.x, e.clientY - sw.y) < 8;
     sw = null; nt.style.transition = nt.style.transform = '';
-    if (tap) return openFromBanner();
+    wasTap = tap;
+    if (tap) return;                               // the click that follows opens the chat
     if (d > 30) nt.classList.remove('on'); else ntTimer = setTimeout(() => nt.classList.remove('on'), 3000);
   };
+  // Open from the banner's own click (not pointerup): on phones the click arrives after pointerup and,
+  // if the screen has already changed, lands on whatever chat row is now under the finger.
+  let guard = 0, wasTap = false;
+  nt.addEventListener('click', e => { e.stopPropagation(); if (wasTap) { wasTap = false; openFromBanner(); } });
+  el.addEventListener('click', e => { if (performance.now() < guard && e.target.closest('.kt-room')) e.stopPropagation(); }, true);
   function openFromBanner() {                      // tap: jump straight into that chat
+    guard = performance.now() + 600;
     nt.classList.remove('on');
     go('port');
     if (current !== APPVIEWS.kakaotalk) { closeApp(true); openApp('kakaotalk'); }
