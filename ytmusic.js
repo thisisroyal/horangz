@@ -6,10 +6,10 @@
   const PIN = '<svg class="ck" viewBox="0 0 20 20"><path d="M12.5 2.5 17.5 7.5l-2.2.6-3 3 .3 3.6-1.4 1.4-3.4-3.4L4 16.5l-.5-.5 3.8-3.8L4 8.8l1.4-1.4 3.6.3 3-3z" fill="#aaa"/></svg>';
   const LIST = [
     { img: 'liked', title: '좋아요 표시한 음악', sub: `${PIN}자동 재생목록` },
-    { img: 'pl1', title: '노동요', sub: `${CHECK}재생목록 • chillthewave • 트랙 16개` },
-    { img: 'pl2', title: '작업용', sub: `${CHECK}재생목록 • chillthewave • 트랙 26개` },
+    { img: 'pl1', title: '노동요', sub: `${CHECK}재생목록 • royalchristmassy • 트랙 16개` },
+    { img: 'pl2', title: '작업용', sub: `${CHECK}재생목록 • royalchristmassy • 트랙 26개` },
     { img: 'bnd', title: 'BOYNEXTDOOR', sub: '아티스트 • 구독자 254만명', round: true },
-    { img: 'pl3', title: '늘어지기', sub: `${CHECK}재생목록 • chillthewave • 트랙 21개` },
+    { img: 'pl3', title: '늘어지기', sub: `${CHECK}재생목록 • royalchristmassy • 트랙 21개` },
   ];
   const CHIPS = ['오프라인 저장', '재생목록', '노래', '앨범', '아티스트'];
   const s = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
