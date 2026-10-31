@@ -63,6 +63,13 @@
     '<svg viewBox="0 0 24 24"><circle cx="4" cy="12" r="2.3"/><circle cx="12" cy="12" r="2.3"/><circle cx="20" cy="12" r="2.3"/></svg>',
   ];
 
+  // "@name" mentions of friends turn blue (longest names first so "성호 오빠" wins over "성호")
+  let MENTION;
+  const mention = t => {
+    MENTION ??= new RegExp('@(' + [...new Set([ME, ...Object.keys(PEOPLE), ...Object.values(PEOPLE).map(p => p[0])])]
+      .sort((a, b) => b.length - a.length).map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'g');
+    return t.replace(MENTION, '<span class="at">@$1</span>');
+  };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const t12 = t => { const [ap, hm] = t.split(' '); return `${hm} ${ap === '오전' ? 'AM' : 'PM'}`; };
   const ymd = s => s.match(/(\d+)년 (\d+)월 (\d+)일/).slice(1).map(Number);
@@ -293,7 +300,7 @@
       <div class="kt-roomv">
         <div class="kt-rh"><button class="back">${I.back}<span class="kt-unread">${unread}</span></button><h2></h2><div class="kt-icons">${I.search + I.phone + I.menu}</div></div>
         <div class="kt-msgs"></div>
-        <div class="kt-plus">${PLUS.map(([f, t]) => `<span><img src="assets/kakao/plus/${f}.webp" alt="">${t}</span>`).join('')}</div>
+        <div class="kt-plus">${PLUS.map(([f, t], i) => `<span style="--i:${i}"><img src="assets/kakao/plus/${f}.webp" alt="">${t}</span>`).join('')}</div>
         <button class="kt-new" hidden><img alt=""><b></b><span></span>${I.down}</button>
         <form class="kt-in"><button type="button" class="plus" aria-label="More">${I.plus}</button><label class="kt-field"><input enterkeyhint="send" autocomplete="off" placeholder="Enter a message">${I.smile}</label><button type="button" class="hash">#</button><button class="send" aria-label="Send">${I.send}</button></form>
       </div>`;
@@ -310,9 +317,12 @@
     // "+" opens the attachment panel (turns into ×); typing closes it
     const plus = (on = !roomEl.classList.contains('plus-on')) => {
       roomEl.classList.toggle('plus-on', on);
-      const b = msgBox(); if (on) setTimeout(() => b.scrollTo({ top: b.scrollHeight, behavior: 'smooth' }), 250);
+      const b = msgBox(), end = atBottom();
+      if (on) input.blur();                        // the panel replaces the keyboard; never focus the input here
+      if (end) { const keep = () => (b.scrollTop = b.scrollHeight); keep(); b.addEventListener('transitionend', keep, { once: true }); }
     };
-    form.querySelector('.plus').addEventListener('click', () => { if (!roomEl.classList.contains('plus-on')) input.blur(); plus(); });
+    form.querySelector('.plus').addEventListener('pointerdown', e => e.preventDefault());   // keep the on-screen keyboard down
+    form.querySelector('.plus').addEventListener('click', () => plus());
     input.addEventListener('focus', () => plus(false));
     form.addEventListener('submit', e => { e.preventDefault(); send(input.value); input.value = ''; roomEl.classList.remove('typing'); input.focus(); });
     keyboardLift(input);
@@ -355,7 +365,7 @@
     const { m } = f, mine = m.isMe, named = f.start && !mine && n > 0;
     const body = f.call ? `<div class="b call">${I.call}Missed Voice Call</div>`
       : f.media ? (MEDIA[m.mediaKey] ? `<img class="b pic" src="assets/media/${MEDIA[m.mediaKey][0]}.webp" width="${MEDIA[m.mediaKey][1]}" height="${MEDIA[m.mediaKey][2]}" loading="lazy" alt="">` : `<div class="b ph">${I.pic}${esc(m.mediaCaption || '')}</div>`)
-      : `<div class="b">${esc(f.text)}</div>`;
+      : `<div class="b">${mention(esc(f.text))}</div>`;
     const meta = (f.lastOfMsg && m.unread ? `<i>${m.unread}</i>` : '') + (endGroup ? `<span>${t12(m.time)}</span>` : '');
     const cls = ['m', mine && 'me', f.start && 'g t', named && 'n'].filter(Boolean).join(' ');
     return `<div class="${cls}">${named ? `<img class="av" src="${P(m.sender)}" alt=""><span class="who">${esc(PEOPLE[m.sender]?.[0] || m.sender)}</span>` : ''}${body}<div class="meta">${meta}</div></div>`;

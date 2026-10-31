@@ -495,13 +495,16 @@ img{-webkit-user-drag:none}
 .kt-msgs{padding-top:100px}
 .kt-msgs::before{content:"";position:absolute;z-index:1;left:0;right:0;top:100px;height:88px;background:linear-gradient(#abc1d1 12%,rgba(171,193,209,0));pointer-events:none}
 /* KakaoTalk: "+" attachment panel */
-.kt-in,.kt-msgs{transition:bottom .3s cubic-bezier(.2,.8,.2,1),height .3s cubic-bezier(.2,.8,.2,1)}
+/* + sheet: input bar and panel rise together on the iOS keyboard curve; chat area shrinks with them */
+.kt-in,.kt-plus{transition:transform .38s cubic-bezier(.38,.7,.125,1)}
+.kt-msgs{transition:bottom .38s cubic-bezier(.38,.7,.125,1)}
+.kt-in>button.plus svg{transition:transform .3s cubic-bezier(.38,.7,.125,1)}
 .kt-in>button.plus svg{transition:transform .25s}
 .plus-on .kt-in>button.plus svg{transform:rotate(45deg)}
-.plus-on .kt-in{bottom:297px;height:56px}
+.plus-on .kt-in{transform:translateY(-263px)}
 .plus-on .kt-msgs{bottom:353px}
 .plus-on .kt-new{bottom:361px}
-.kt-plus{position:absolute;z-index:2;left:0;right:0;bottom:0;height:297px;display:grid;grid-template-columns:repeat(4,99px);grid-auto-rows:100px;padding:29.6px 0 20px 3px;background:#fefefe;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.kt-plus{position:absolute;z-index:2;left:0;right:0;bottom:0;height:297px;display:grid;grid-template-columns:repeat(4,99px);grid-auto-rows:100px;padding:29.6px 0 20px 3px;background:#fefefe;overflow-y:auto;scrollbar-width:none;transform:translateY(100%)}
 .kt-plus::-webkit-scrollbar{display:none}
 .plus-on .kt-plus{transform:none}
 .kt-plus span{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:15px;line-height:1.2;color:#2a2a2a;text-align:center;cursor:pointer}
@@ -518,3 +521,8 @@ img{-webkit-user-drag:none}
 .kt-ad .buy{flex:none;height:32px;padding:0 13px;border-radius:16px;box-shadow:inset 0 0 0 1px #d6d6d6;font-size:14px;line-height:32px;color:#222}
 /* Friends tab: fade lightly covers the lower third of the last profile picture (40px photo, 8px under it) */
 .kt-friends .kt-fade{height:21px;margin-top:-21px;background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.8) 62%,#fff)}
+
+.plus-on .kt-in{height:90px}
+.kt-plus span{opacity:0;transform:translateY(10px);transition:opacity .25s,transform .35s cubic-bezier(.2,.8,.2,1)}
+.plus-on .kt-plus span{opacity:1;transform:none;transition-delay:calc(.05s + var(--i) * .015s)}
+.b .at{color:#3a6ccf}
