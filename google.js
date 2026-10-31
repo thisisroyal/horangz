@@ -2,10 +2,11 @@
 /* ===== Safari on google.com (opens from the Safari icon in the dock) ===== */
 (() => {
   const A = 'assets/google/';
+  // Reconstructed from US news of Fri, March 7, 2025 (daily Google Trends archives for that day aren't public)
   const TRENDS = [
-    ['slow horses river cartwright', 'River Cartwright — TV character'],
-    ['super typhoon champi'], ['arbys sub stackers'], ['tsa checkpoint phone hygiene tips'],
-    ['arizona weather forecast'], ['ornate hawk eagle crested owl predation'],
+    ['lady gaga mayhem', 'Mayhem — 2025 album by Lady Gaga'],
+    ['spacex starship explosion'], ['jobs report'], ['severance episode 8'],
+    ['florida flights delayed debris'], ['daylight saving time 2025'],
   ];
   let history = [['스탠바이미', '이미지'], ['눈'], ['눈 오는 날 탈모']];
   const s = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
