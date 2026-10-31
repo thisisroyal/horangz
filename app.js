@@ -6,11 +6,23 @@ const TZ = 'America/Chicago';
 const WEATHER = { temp: 0, cond: 'Cloudy', hi: 2, lo: 0 };
 
 const I = 'assets/icons/';
+// folders: [mini icon file, label, app id it opens (optional)]
+const F = {
+  ect: [['appstore', 'App Store'], ['settings', 'Settings']],
+  productivity: [['prod0', 'Files'], ['prod1', 'Dropbox'], ['zoom', 'Zoom'], ['drive', 'Drive'], ['papago', 'Papago'], ['deepl', 'DeepL'], ['duolingo', 'Duolingo']],
+  utilities: ['Compass', 'Measure', 'Calculator', 'Wallet', 'Find My', 'Health', 'FaceTime', 'Voice Memos', 'Watch'].map((t, i) => ['util' + i, t]),
+  ott: [['netflix', 'Netflix'], ['watcha', 'WATCHA', 'watcha']],
+  sns: [['instagram', 'Instagram'], ['x', 'X'], ['youtube', 'YouTube']],
+  ride: [['uber', 'Uber'], ['lyft', 'Lyft']],
+  delivery: [['starbucks', 'Starbucks'], ['amazon', 'Amazon']],
+};
+const fold = (id, name) => [id, name, { folder: F[id].map(f => f[0]) }];
+// right half of the widget row holds a 2x2 block of icons
+const TOP = [['weather', 'Weather'], ['calendar', 'Calendar', { type: 'cal' }], ['photos', 'Photos'], ['camera', 'Camera']];
 const APPS = [
-  ['weather', 'Weather'], ['calendar', 'Calendar', { type: 'cal' }], ['photos', 'Photos'], ['camera', 'Camera'],
-  ['appstore', 'App Store'], ['notes', 'Notes'], ['clock', 'Clock', { type: 'clk' }], ['productivity', 'Productivity', { folder: ['prod0', 'prod1'] }],
-  ['settings', 'Settings'], ['utilities', 'Utilities', { folder: [...Array(9)].map((_, i) => 'util' + i) }], ['watcha', 'WATCHA'], ['duolingo', 'Duolingo'],
-  ['kakaotalk', 'KakaoTalk', { badge: 530 }], ['instagram', 'Instagram'], ['gmail', 'Gmail'], ['googlemaps', 'Google Maps'],
+  ['notes', 'Notes'], ['clock', 'Clock', { type: 'clk' }], fold('ect', 'Ect'), fold('productivity', 'Productivity'),
+  fold('utilities', 'Utilities'), fold('ott', 'OTT'), ['kakaotalk', 'KakaoTalk', { badge: 530 }], fold('sns', 'SNS'),
+  ['gmail', 'Gmail'], ['googlemaps', 'Google Maps'], fold('ride', 'Ride'), fold('delivery', 'Delivery'),
 ];
 const DOCK = [['phone'], ['safari'], ['messages'], ['ytmusic']];
 
@@ -34,6 +46,7 @@ function icon([id, name, o = {}]) {
   return `<div class="app" data-app="${id}"><div class="ico ${cls}">${inner}${o.badge ? `<span class="badge">${o.badge}</span>` : ''}</div>${name ? `<span class="label">${name}</span>` : ''}</div>`;
 }
 $('#grid').innerHTML = APPS.map(icon).join('');
+$('#grid2').innerHTML = TOP.map(icon).join('');
 $('#dock').innerHTML = DOCK.map(icon).join('');
 $('.wx-temp').textContent = WEATHER.temp + '°';
 $('.wx-cond').textContent = WEATHER.cond;
@@ -99,9 +112,29 @@ const setBadge = (id, n) => { const b = $(`[data-app=${id}] .badge`); if (b) b.t
 $('#homebtn').addEventListener('click', () => go('port'));
 $('#hb').addEventListener('click', () => closeApp());
 $('#dock').addEventListener('click', e => { const id = e.target.closest('.app')?.dataset.app; id && openApp(id); });
-$('#grid').addEventListener('click', e => {
+const launch = id => (id === 'watcha' ? go('land') : openApp(id));
+for (const g of ['#grid', '#grid2']) $(g).addEventListener('click', e => {
   const id = e.target.closest('.app')?.dataset.app;
-  if (id === 'watcha') go('land'); else if (id) openApp(id);
+  if (F[id]) openFolder(id, e.target.closest('.ico')); else if (id) launch(id);
+});
+
+/* ===== Folders: open in place, iOS style ===== */
+const fv = document.createElement('div');
+fv.className = 'fv';
+$('#home').append(fv);
+function openFolder(id, from) {
+  const name = APPS.find(a => a[0] === id)[1], r = from.getBoundingClientRect(), h = $('#home').getBoundingClientRect(), k = h.width / 402;
+  fv.innerHTML = `<h2>${name}</h2><div class="fv-box">${F[id].map(([m, t, app]) =>
+    `<div class="app"${app ? ` data-app="${app}"` : ''}><div class="ico"><img src="${I}${m.startsWith('util') || m.startsWith('prod') ? 'mini/' : ''}${m}.webp" alt="" draggable="false"></div><span class="label">${t}</span></div>`).join('')}</div>`;
+  const box = fv.querySelector('.fv-box'), b = box.getBoundingClientRect();
+  box.style.setProperty('--fx', (r.left + r.width / 2 - (b.left + b.width / 2)) / k + 'px');
+  box.style.setProperty('--fy', (r.top + r.height / 2 - (b.top + b.height / 2)) / k + 'px');
+  box.style.setProperty('--fs', r.width / b.width);
+  requestAnimationFrame(() => requestAnimationFrame(() => fv.classList.add('on')));
+}
+fv.addEventListener('click', e => {
+  const id = e.target.closest('[data-app]')?.dataset.app;
+  if (!e.target.closest('.fv-box') || id) { fv.classList.remove('on'); if (id) setTimeout(() => launch(id), 200); }
 });
 
 /* ===== Mouse drag scrolls lists like a finger would (desktop) ===== */

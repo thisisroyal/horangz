@@ -526,3 +526,17 @@ img{-webkit-user-drag:none}
 .kt-plus span{opacity:0;transform:translateY(10px);transition:opacity .25s,transform .35s cubic-bezier(.2,.8,.2,1)}
 .plus-on .kt-plus span{opacity:1;transform:none;transition-delay:calc(.05s + var(--i) * .015s)}
 .b .at{color:#3a6ccf}
+
+/* home: 2x2 icon block in the right half of the widget row; three app rows below, the row above Search left empty */
+.grid2{top:89px;left:214.2px;row-gap:18px;grid-template-columns:repeat(2,63px)}
+
+/* open folder */
+.fv{position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;pointer-events:none;background:rgba(40,40,40,.18);-webkit-backdrop-filter:blur(0);backdrop-filter:blur(0);transition:opacity .3s,backdrop-filter .35s,-webkit-backdrop-filter .35s}
+.fv.on{opacity:1;pointer-events:auto;-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4)}
+.fv h2{font-size:32px;font-weight:700;letter-spacing:-.3px;text-shadow:0 1px 8px rgba(0,0,0,.2);transition:opacity .3s,transform .4s cubic-bezier(.2,.9,.25,1)}
+.fv:not(.on) h2{opacity:0;transform:scale(.9)}
+.fv-box{display:grid;grid-template-columns:repeat(3,63px);gap:20px 26px;justify-items:center;width:308px;min-height:308px;align-content:start;padding:30px 24px;border-radius:42px;background:rgba(255,255,255,.28);box-shadow:inset 0 0 0 .8px rgba(255,255,255,.4),inset 0 1px 1px rgba(255,255,255,.5);transition:transform .42s cubic-bezier(.2,.9,.25,1)}
+.fv:not(.on) .fv-box{transform:translate(var(--fx),var(--fy)) scale(var(--fs))}
+.fv-box .app{cursor:default}
+.fv-box .app[data-app]{cursor:pointer}
+.fv-box .label{width:80px}
