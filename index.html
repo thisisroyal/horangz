@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>iPhone 17 Pro Web Simulator (6.3" 19.6:9)</title>
   <link rel="stylesheet" href="./style.css">
-  <script src="./chatData.js" defer></script>
+  <script src="data/chatData.js" defer></script>
 </head>
 <body class="min-h-screen flex items-center justify-center p-0 md:p-6">
   <div class="w-full max-w-[402px] h-screen md:h-[876px] bg-black md:rounded-[55px] shadow-2xl relative overflow-hidden flex flex-col border-[10px] border-[#2c2c2e]">
@@ -122,21 +122,21 @@
         <div class="border-t border-gray-100/60 pt-4 px-4 space-y-4">
             
             <!-- chatData.js에 있는 키 값과 대소문자, 띄어쓰기를 100% 동일하게 일치시킨 onclick 이벤트 -->
-            <div onclick="openChatRoom('Myeong')" class="flex items-center space-x-3 cursor-pointer"><img src="./myeong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>M</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">Myeong</span></div>
+            <div onclick="openChatRoom('Myeong')" class="flex items-center space-x-3 cursor-pointer"><img src="assets/profile/myeong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>M</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">Myeong</span></div>
             
-            <div onclick="openChatRoom('김동')" class="flex items-center space-x-3 cursor-pointer"><img src="./kimdong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>김</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">김동</span></div>
+            <div onclick="openChatRoom('김동')" class="flex items-center space-x-3 cursor-pointer"><img src="assets/profile/kimdong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>김</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">김동</span></div>
             
-            <div onclick="openChatRoom('한동')" class="flex items-center space-x-3 cursor-pointer"><img src="./handong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>한</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">한동</span></div>
+            <div onclick="openChatRoom('한동')" class="flex items-center space-x-3 cursor-pointer"><img src="assets/profile/handong.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>한</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">한동</span></div>
             
-            <div onclick="openChatRoom('성호오빠')" class="flex items-center space-x-3 cursor-pointer"><img src="./sunghopa.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>성</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">성호 오빠</span></div>
+            <div onclick="openChatRoom('성호오빠')" class="flex items-center space-x-3 cursor-pointer"><img src="assets/profile/sungho.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>성</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">성호 오빠</span></div>
             
-            <div onclick="openChatRoom('상히기니')" class="flex items-center space-x-3 cursor-pointer"><img src="./gini.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>상</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">상히기니</span></div>
+            <div onclick="openChatRoom('상히기니')" class="flex items-center space-x-3 cursor-pointer"><img src="assets/profile/gini.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>상</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">상히기니</span></div>
             
-            <div onclick="openChatRoom('비니비니언니')" class="flex items-center space-x-3 cursor-pointer"><img src="./bini.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>비</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">비니비니 언니</span></div>
+            <div onclick="openChatRoom('비니비니언니')" class="flex items-center space-x-3 cursor-pointer"><img src="assets/profile/bini.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>비</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">비니비니 언니</span></div>
             
-            <div onclick="openChatRoom('제로언니')" class="flex items-center space-x-3 cursor-pointer"><img src="./zero.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>제</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">제로 언니</span></div>
+            <div onclick="openChatRoom('제로언니')" class="flex items-center space-x-3 cursor-pointer"><img src="assets/profile/zero.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>제</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">제로 언니</span></div>
             
-            <div onclick="openChatRoom('운학이')" class="flex items-center space-x-3 cursor-pointer"><img src="./woonhak.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>운</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">운학이</span></div>
+            <div onclick="openChatRoom('운학이')" class="flex items-center space-x-3 cursor-pointer"><img src="assets/profile/woonhak.jpg" onerror="this.outerHTML='<div class=\'w-[44px] h-[44px] rounded-[16px] bg-gray-200 flex items-center justify-center font-bold\'>운</div>'" class="w-[44px] h-[44px] rounded-[16px] object-cover"/><span class="text-[15px] font-medium text-black">운학이</span></div>
         </div>
       </div>
 
@@ -144,7 +144,7 @@
       <div id="kt-view-chats" class="flex-1 flex flex-col h-full bg-white overflow-y-auto pb-[60px] hidden">
         <div class="pt-14 px-4 pb-2"><h1 class="text-[24px] font-bold text-black">Chats</h1></div>
         <div class="px-4 space-y-4 pt-2">
-          <div onclick="openChatRoom('호랑이들', 9)" class="flex items-center justify-between cursor-pointer"><div class="flex items-center space-x-3"><div class="kt-group-profile"><img src="./myeong.jpg" class="kt-group-img-1" onerror="this.style.display='none'"/><img src="./kimdong.jpg" class="kt-group-img-2" onerror="this.style.display='none'"/></div><span class="text-[15px] font-medium text-black">호랑이들</span></div></div>
+          <div onclick="openChatRoom('호랑이들', 9)" class="flex items-center justify-between cursor-pointer"><div class="flex items-center space-x-3"><div class="kt-group-profile"><img src="assets/profile/myeong.jpg" class="kt-group-img-1" onerror="this.style.display='none'"/><img src="assets/profile/kimdong.jpg" class="kt-group-img-2" onerror="this.style.display='none'"/></div><span class="text-[15px] font-medium text-black">호랑이들</span></div></div>
           
           <div onclick="openChatRoom('My girls', 3)" class="flex items-center justify-between cursor-pointer"><div class="flex items-center space-x-3"><div class="w-[44px] h-[44px] rounded-[16px] bg-pink-100 flex items-center justify-center text-xl">👯‍♀️</div><span class="text-[15px] font-medium text-black">My girls</span></div></div>
           
