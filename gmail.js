@@ -3,15 +3,15 @@
 (() => {
   const G = 'assets/gmail/';
   const MAILS = [
-    { av: 'info', from: 'info', date: 'Oct 20', subj: 'Your order 52603 is on its way', snip: '📦 Your order is on its way Hi Yeoju, Your order is on its way and will arrive soon.', read: true },
-    { av: 'dnr', from: 'do-not-reply', date: 'Oct 20', subj: 'Hill tool center Checkout Return Reminder', snip: 'Dear Yeoju Eun: As a reminder, the following items are due back soon.', read: true },
-    { av: 'handshake', from: 'Handshake', date: 'Oct 20', subj: '"Your first job alert": Arts of Life - Chicago', snip: 'Handshake YE New matches for your saved search' },
+    { av: 'info', from: 'info', date: 'Feb 28', subj: 'Your order 52603 is on its way', snip: '📦 Your order is on its way Hi Yeoju, Your order is on its way and will arrive soon.', read: true },
+    { av: 'dnr', from: 'do-not-reply', date: 'Feb 28', subj: 'Hill tool center Checkout Return Reminder', snip: 'Dear Yeoju Eun: As a reminder, the following items are due back soon.', read: true },
+    { av: 'handshake', from: 'Handshake', date: 'Feb 28', subj: '"Your first job alert": Arts of Life - Chicago', snip: 'Handshake YE New matches for your saved search' },
     { promo: true },
-    { av: 'handshake', from: 'Handshake', date: 'Oct 20', subj: '"Search on 9/14/2024": Teaching Assistant', snip: 'Handshake YE New matches for your saved search' },
-    { av: 'amazon', from: 'Amazon Marketplace', date: 'Oct 20', subj: 'Yeoju Eun, will you rate your transaction with us?', snip: 'Hi Yeoju Eun, Rate your experience with the seller' },
-    { av: 'person', from: 'Donghyun Kim', date: 'Oct 20', subj: '누나 안녕', snip: 'ㅎㅎ', read: true, starred: true, open: true },
-    { av: 'linkedin', from: 'LinkedIn', date: 'Oct 19', subj: 'Learning Spotlight: Cybersecurity Starter Kit', snip: 'Practical Skills for Staying Secure' },
-    { av: 'linkedin', from: 'LinkedIn', date: 'Oct 19', subj: 'Yeoju, you appeared in 4 searches this week', snip: 'See who\'s looking at your profile' },
+    { av: 'handshake', from: 'Handshake', date: 'Feb 27', subj: '"Search on 9/14/2024": Teaching Assistant', snip: 'Handshake YE New matches for your saved search' },
+    { av: 'amazon', from: 'Amazon Marketplace', date: 'Feb 27', subj: 'Yeoju Eun, will you rate your transaction with us?', snip: 'Hi Yeoju Eun, Rate your experience with the seller' },
+    { av: 'person', from: 'Donghyun Kim', date: 'Feb 26', subj: '누나 안녕', snip: 'ㅎㅎ', read: true, starred: true, open: true },
+    { av: 'linkedin', from: 'LinkedIn', date: 'Feb 25', subj: 'Learning Spotlight: Cybersecurity Starter Kit', snip: 'Practical Skills for Staying Secure' },
+    { av: 'linkedin', from: 'LinkedIn', date: 'Feb 24', subj: 'Yeoju, you appeared in 4 searches this week', snip: 'See who\'s looking at your profile' },
   ];
   const s = (d, w = 24) => `<svg viewBox="0 0 ${w} 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const I = {
@@ -45,11 +45,12 @@
 
   const el = document.createElement('section');
   el.id = 'gmail'; el.className = 'appview';
-  el.innerHTML = `<div class="gm-sc">
+  el.innerHTML = `<div class="gm-sc"><!-- fixed list: more mail fades out below -->
       <div class="gm-search">${I.menu}<span>Search in mail</span><img src="${G}profile.webp" alt=""></div>
       <p class="gm-lbl">All inboxes</p>
       ${MAILS.map(row).join('')}
     </div>
+    <div class="gm-fade"></div>
     <button class="gm-compose">${I.pen}Compose</button>
     <nav class="gm-nav"><span class="on">${I.mail}<b>99+</b></span><span>${I.video}</span></nav>`;
   const detail = m => `<div class="gm-mail">
