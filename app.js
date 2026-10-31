@@ -60,23 +60,15 @@ function tick() {
 }
 tick();
 
-/* ===== Fit the framed phone to the viewport ===== */
+/* ===== Fit the framed phone (fixed iPhone 17 Pro ratio, never rotates) ===== */
 const root = document.documentElement, body = document.body, dev = $('#device');
-const DW = 436, DH = 908;                         // frame size incl. bezel
-const touch = matchMedia('(pointer:coarse)');
-const set = (k, v) => dev.style.setProperty(k, v);
-
+const DW = 436, DH = 908;                         // 402x874 screen + bezel + frame
 function fit() {
-  const land = body.dataset.state === 'land', vw = innerWidth, vh = innerHeight;
-  // landscape player: turn the phone sideways unless a touch device is held upright
-  const r = land && !(touch.matches && vh > vw) ? -90 : 0;
-  const [w, h] = r ? [DH, DW] : [DW, DH], m = touch.matches ? 12 : 32;
-  set('--r', r + 'deg');
-  set('--k', Math.min(1, (vw - m) / w, (vh - m) / h));
+  const m = matchMedia('(pointer:coarse)').matches ? 12 : 32;
+  dev.style.setProperty('--k', Math.min(1, (innerWidth - m) / DW, (innerHeight - m) / DH));
 }
 addEventListener('resize', fit);
 fit();
-requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('ready')));
 
 /* ===== Navigation: player (landscape) <-> home <-> apps ===== */
 const APPVIEWS = {};                               // id -> { el, open(), close() } registered by app modules
@@ -86,8 +78,9 @@ function go(state) {
   if (body.dataset.state === state) return;
   closeApp(true);
   body.dataset.state = state;
-  root.classList.toggle('enter', state === 'port');
-  fit();
+  root.classList.remove('enter');
+  void root.offsetWidth;                           // restart the screen-internal transition
+  root.classList.add('enter');
 }
 function openApp(id) {
   const a = APPVIEWS[id];
@@ -101,6 +94,7 @@ function closeApp(instant) {
   a.el.classList.toggle('instant', !!instant); a.el.classList.remove('open');
   root.classList.remove('dark-ui'); a.close?.();
 }
+const setBadge = (id, n) => { const b = $(`[data-app=${id}] .badge`); if (b) b.textContent = n; };
 $('#homebtn').addEventListener('click', () => go('port'));
 $('#hb').addEventListener('click', () => closeApp());
 $('#grid').addEventListener('click', e => {

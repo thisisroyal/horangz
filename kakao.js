@@ -2,7 +2,12 @@
 /* ===== KakaoTalk app ===== */
 (() => {
   const ME = '은여주';
-  const UNREAD = 530, OPEN_CHAT = 686;          // tab badges
+  const OPEN_CHAT = 686;                         // open-chat tab badge
+  let unread = 530;                              // total unread shown on icon and tabs
+  const roomUnread = {};
+  const LIVE_FROM = Date.UTC(2025, 2, 7) / 6e4 + 22 * 60 + 38; // messages from 3/7 10:38 PM arrive live
+  const FIRST = '성호오빠';                       // within a minute, this room's messages arrive first
+  const VER = document.currentScript.src.split('?')[1] || '';
   // data sender name -> [display name, profile image]
   const PEOPLE = {
     '김동': ['김동', 'kimdong'], '비니비니언니': ['비니비니 언니', 'bini'], '상히기니': ['상히기니', 'gini'],
@@ -49,14 +54,81 @@
   const el = document.createElement('section');
   el.id = 'kakao'; el.className = 'appview';
   $('#apps').append(el);
-  APPVIEWS.kakaotalk = { el, light: true, open: () => (data ? null : load()), close: () => setTimeout(() => tab('friends'), 400) };
+  APPVIEWS.kakaotalk = { el, light: true, close: () => setTimeout(() => tab('friends'), 400) };
 
   function load() {
     const s = document.createElement('script');
-    s.src = 'data/chatData.js';
-    s.onload = () => { data = window.chatData; build(); };
+    s.src = 'data/chatData.js' + (VER && '?' + VER);
+    s.onload = () => { data = window.chatData; queue = pending(); build(); setInterval(arrive, 400); };
     document.head.append(s);
   }
+  load();
+
+  /* ----- live messages: pulled out of the data, delivered when the phone clock reaches them ----- */
+  let queue = [];
+  function pending() {
+    const list = [];
+    for (const k of ROOMS) {
+      const msgs = data[k]; let date = '', cut = -1;
+      msgs.forEach((m, i) => {
+        if (m.type === 'date') { date = m.date; return; }
+        const [y, mo, d] = ymd(date), st = Date.UTC(y, mo - 1, d) / 6e4 + mins(m.time);
+        if (st >= LIVE_FROM) { if (cut < 0) cut = i; list.push({ k, m, st, i }); }
+      });
+      if (cut < 0) continue;
+      msgs.splice(cut);
+      if (msgs.at(-1)?.type === 'date') list.find(x => x.k === k).date = msgs.pop();
+    }
+    list.sort((a, b) => a.st - b.st || (b.k === FIRST) - (a.k === FIRST) || a.i - b.i);
+    const out = [];
+    list.forEach((x, j) => {
+      const same = list.filter(y => y.st === x.st), n = same.indexOf(x);
+      const at = START + (x.st - LIVE_FROM) * 6e4 + (2 + n * 50 / same.length) * 1e3;
+      const { m } = x, parts = m.mediaKey ? [{ ...m, lines: undefined, extraLines: undefined }] : [];
+      (m.lines || []).forEach(t => parts.push({ ...m, mediaKey: undefined, lines: [t], extraLines: undefined }));
+      parts.forEach((obj, i) => out.push({ k: x.k, obj, date: i ? null : x.date, at: at + i * 1400 }));
+    });
+    return out;
+  }
+  function arrive() {
+    while (queue.length && queue[0].at <= simNow()) {
+      const { k, obj, date } = queue.shift(), msgs = data[k];
+      if (date) msgs.push(date);
+      msgs.push(obj);
+      const viewing = roomKey === k && roomEl.classList.contains('on') && current === APPVIEWS.kakaotalk;
+      if (viewing) refreshRoom(true);
+      else { roomUnread[k] = (roomUnread[k] || 0) + 1; unread++; notify(k, obj); }
+      badges(); refreshList();
+    }
+  }
+  function badges() {
+    setBadge('kakaotalk', unread);
+    el.querySelectorAll('.kt-unread').forEach(b => b.textContent = unread);
+  }
+  const refreshList = () => { const c = el.querySelector('.kt-chats'); if (c) c.querySelector('.kt-list').outerHTML = list(); };
+
+  /* ----- banner notification ----- */
+  const nt = document.createElement('div');
+  nt.className = 'nt';
+  nt.innerHTML = `<div class="nt-av"><img alt=""><img class="nt-app" src="assets/icons/kakaotalk.webp" alt=""></div><div class="nt-tx"><b></b><p></p></div><time>now</time>`;
+  let ntTimer, ntRoom;
+  function notify(k, m) {
+    const who = PEOPLE[m.sender]?.[0] || m.sender, text = m.mediaKey ? 'Photo' : m.lines[0];
+    nt.querySelector('.nt-av img').src = P(m.sender);
+    nt.querySelector('b').textContent = PEOPLE[k] ? who : k;
+    nt.querySelector('p').textContent = PEOPLE[k] ? text : `${who}: ${text}`;
+    (body.dataset.state === 'land' ? $('#player') : $('#screen')).append(nt);
+    ntRoom = k;
+    nt.classList.remove('pop'); void nt.offsetWidth;
+    nt.classList.add('on', 'pop');
+    clearTimeout(ntTimer); ntTimer = setTimeout(() => nt.classList.remove('on'), 5000);
+  }
+  nt.addEventListener('click', () => {
+    nt.classList.remove('on');
+    go('port');
+    if (current !== APPVIEWS.kakaotalk) openApp('kakaotalk');
+    tab('chats'); openRoom(ntRoom);
+  });
 
   /* ----- room helpers ----- */
   const members = k => [...new Set(data[k].filter(m => m.sender && m.sender !== ME).map(m => m.sender))];
@@ -101,23 +173,26 @@
     </div>`;
   }
   function chats() {
-    const list = ROOMS.map(k => ({ k, ...lastInfo(k) })).sort((a, b) => b.stamp - a.stamp);
     return `<div class="sc kt-chats" hidden>
       ${head('Chats', I.search + I.newchat + I.gear)}
-      <div class="kt-pills"><span class="on">All</span><span><img src="${K}pill-chat.webp" alt=""><i class="n">${UNREAD}</i></span><span>ChatGPT <i class="n">N</i></span><span class="i"><img src="${K}pill-call.webp" alt=""></span><span class="i"><img src="${K}pill-plus.webp" alt=""></span></div>
+      <div class="kt-pills"><span class="on">All</span><span><img src="${K}pill-chat.webp" alt=""><i class="n kt-unread">${unread}</i></span><span>ChatGPT <i class="n">N</i></span><span class="i"><img src="${K}pill-call.webp" alt=""></span><span class="i"><img src="${K}pill-plus.webp" alt=""></span></div>
       ${banner}
-      <div class="kt-list">${list.map(r => {
-        const n = PEOPLE[r.k] ? 0 : members(r.k).length + 1;
-        return `<div class="kt-room" data-room="${esc(r.k)}">${groupAv(r.k)}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(title(r.k))}</b>${n ? `<i>${n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div></div>`;
-      }).join('')}</div>
+      ${list()}
     </div>`;
+  }
+  function list() {
+    const rows = ROOMS.map(k => ({ k, ...lastInfo(k) })).sort((a, b) => b.stamp - a.stamp);
+    return `<div class="kt-list">${rows.map(r => {
+        const n = PEOPLE[r.k] ? 0 : members(r.k).length + 1;
+        return `<div class="kt-room" data-room="${esc(r.k)}">${groupAv(r.k)}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(title(r.k))}</b>${n ? `<i>${n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${roomUnread[r.k] ? `<b class="ur">${roomUnread[r.k]}</b>` : ''}</div>`;
+      }).join('')}</div>`;
   }
 
   function build() {
     el.innerHTML = friends() + chats() +
-      `<nav class="kt-nav">${NAV.map((s, i) => `<span data-tab="${['friends', 'chats'][i] || ''}"${i ? '' : ' class="on"'}>${s}${i === 1 ? `<b>${UNREAD}</b>` : i === 2 ? `<b>${OPEN_CHAT}</b>` : i === 4 ? '<i class="dot"></i>' : ''}</span>`).join('')}</nav>
+      `<nav class="kt-nav">${NAV.map((s, i) => `<span data-tab="${['friends', 'chats'][i] || ''}"${i ? '' : ' class="on"'}>${s}${i === 1 ? `<b class="kt-unread">${unread}</b>` : i === 2 ? `<b>${OPEN_CHAT}</b>` : i === 4 ? '<i class="dot"></i>' : ''}</span>`).join('')}</nav>
       <div class="kt-roomv">
-        <div class="kt-rh"><button class="back">${I.back}<span>${UNREAD}</span></button><h2></h2><div class="kt-icons">${I.search + I.phone + I.menu}</div></div>
+        <div class="kt-rh"><button class="back">${I.back}<span class="kt-unread">${unread}</span></button><h2></h2><div class="kt-icons">${I.search + I.phone + I.menu}</div></div>
         <div class="kt-msgs"></div>
         <form class="kt-in"><button type="button">${I.plus}</button><label class="kt-field"><input enterkeyhint="send" autocomplete="off" placeholder="Enter a message">${I.smile}</label><button type="button" class="hash">#</button><button class="send" aria-label="Send">${I.send}</button></form>
       </div>`;
@@ -174,12 +249,16 @@
   }
   function openRoom(k) {
     roomKey = k;
+    unread -= roomUnread[k] || 0; roomUnread[k] = 0; badges(); refreshList();
     const n = PEOPLE[k] ? 0 : members(k).length + 1;
     roomEl.querySelector('h2').innerHTML = esc(title(k)) + (n ? ` <i>${n}</i>` : '');
-    const box = roomEl.querySelector('.kt-msgs');
-    box.innerHTML = render(k);
     roomEl.classList.add('on');
-    box.scrollTop = box.scrollHeight;
+    refreshRoom();
+  }
+  function refreshRoom(keep) {
+    const box = roomEl.querySelector('.kt-msgs'), atEnd = !keep || box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+    box.innerHTML = render(roomKey);
+    if (atEnd) box.scrollTop = box.scrollHeight;
   }
   function closeRoom(instant) {
     if (!roomEl) return;
@@ -187,7 +266,7 @@
     roomEl.style.transition = instant === true ? 'none' : '';
     roomEl.classList.remove('on');
     if (instant === true) { roomEl.offsetWidth; roomEl.style.transition = ''; }
-    if (instant !== true) el.querySelector('.kt-chats').outerHTML = chats().replace(' hidden', '');
+    if (instant !== true) refreshList();
   }
   function send(text) {
     text = text.trim();
@@ -197,9 +276,7 @@
     if (![...msgs].reverse().find(m => m.type === 'date')?.date.startsWith(date.split(' ').slice(0, 3).join(' '))) msgs.push({ type: 'date', date });
     const n = PEOPLE[roomKey] ? 1 : members(roomKey).length;
     msgs.push({ sender: ME, isMe: true, time: `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${p.minute}`, unread: n, lines: [text] });
-    const box = roomEl.querySelector('.kt-msgs');
-    box.innerHTML = render(roomKey);
-    box.scrollTop = box.scrollHeight;
+    refreshRoom();
   }
 
   /* ----- keep the input above the on-screen keyboard (lifts the whole phone) ----- */

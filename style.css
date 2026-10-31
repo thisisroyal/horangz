@@ -5,9 +5,8 @@ img,svg{display:block}
 svg{fill:currentColor}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
-/* device: 402x874 screen in a titanium frame; JS sets --k (scale), --r (rotation), --ky (keyboard lift) */
-#device{position:absolute;left:50%;top:50%;padding:4px;border-radius:73px;background:linear-gradient(145deg,#ececee,#a3a3a8 22%,#dcdcdf 48%,#98989d 74%,#e4e4e7);box-shadow:0 0 0 .5px #6e6e73,0 40px 90px rgba(0,0,0,.55);transform:translate(-50%,-50%) translateY(var(--ky,0px)) rotate(var(--r,0deg)) scale(var(--k,1))}
-.ready #device{transition:transform .6s cubic-bezier(.45,0,.2,1)}
+/* device: 402x874 screen in a titanium frame; JS sets --k (scale) and --ky (keyboard lift) */
+#device{position:absolute;left:50%;top:50%;padding:4px;border-radius:73px;background:linear-gradient(145deg,#ececee,#a3a3a8 22%,#dcdcdf 48%,#98989d 74%,#e4e4e7);box-shadow:0 0 0 .5px #6e6e73,0 40px 90px rgba(0,0,0,.55);transform:translate(-50%,-50%) translateY(var(--ky,0px)) scale(var(--k,1));transition:transform .3s ease-out}
 .bezel{padding:13px;border-radius:69px;background:#000;box-shadow:inset 0 0 0 1.5px #2a2a2c}
 #screen{position:relative;width:402px;height:874px;border-radius:56px;overflow:hidden;background:#000;isolation:isolate}
 .btn{position:absolute;width:4px;border-radius:2px;background:linear-gradient(90deg,#8d8d92,#d7d7da 60%,#a0a0a5)}
@@ -20,7 +19,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dark-ui #hb{background:#000}
 
 /* start: Watcha player, drawn landscape inside the portrait screen */
-#player{position:absolute;left:-236px;top:236px;width:874px;height:402px;background:#000;transform:rotate(90deg)}
+#player{position:absolute;left:-236px;top:236px;width:874px;height:402px;background:#000;transform:rotate(90deg);overflow:hidden}
+@keyframes zp{from{transform:rotate(90deg) scale(1.12);opacity:0}}
 #player>img{width:100%;height:100%}
 #homebtn{width:200px;margin-left:-100px}
 .play{position:absolute;left:47.8%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;display:grid;place-items:center}
@@ -44,6 +44,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* home screen */
 #home{position:absolute;inset:0;background:#6b8 url(assets/wallpaper/home.jpg) center/cover}
 .enter #home{animation:zi .5s cubic-bezier(.2,.8,.2,1)}
+.enter #player{animation:zp .5s cubic-bezier(.2,.8,.2,1)}
 @keyframes zi{from{transform:scale(1.12);opacity:0}}
 
 .glass{background:rgba(255,255,255,.2);-webkit-backdrop-filter:blur(18px) saturate(1.7);backdrop-filter:blur(18px) saturate(1.7);box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),inset 0 1px 1px rgba(255,255,255,.5),0 4px 20px rgba(0,0,0,.08)}
@@ -190,3 +191,20 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .typing .kt-in .send{display:grid}
 .typing .kt-in .hash{display:none}
 .kt-rh h2 i{font-style:normal;font-weight:400;color:#5d6a74;margin-left:2px}
+.kt-room{position:relative}
+.kt-room .ur{position:absolute;right:16px;top:33px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#f4551e;color:#fff;font-size:12.5px;line-height:20px;text-align:center;font-weight:700}
+.kt-room .ur~.tx,.kt-room:has(.ur) .pv{padding-right:34px}
+
+/* ===== notification banner ===== */
+.nt{position:absolute;z-index:45;top:56px;left:8px;right:8px;height:67px;display:flex;align-items:center;gap:12px;padding:0 16px 0 14px;border-radius:24px;background:rgba(250,250,250,.9);-webkit-backdrop-filter:blur(22px) saturate(1.8);backdrop-filter:blur(22px) saturate(1.8);box-shadow:0 0 0 .5px rgba(0,0,0,.13),0 10px 30px rgba(0,0,0,.18);color:#111;cursor:pointer;opacity:0;transform:translateY(-140%);transition:transform .55s cubic-bezier(.2,1.15,.3,1),opacity .3s;pointer-events:none}
+.nt.on{opacity:1;transform:none;pointer-events:auto}
+.nt.on.pop{animation:np .35s}
+@keyframes np{50%{transform:scale(1.03)}}
+#player .nt{top:8px;left:50%;right:auto;width:392px;margin-left:-196px}
+.nt-av{position:relative;width:38px;height:38px;flex:none}
+.nt-av img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+.nt-av .nt-app{position:absolute;right:-4px;bottom:-4px;width:17px;height:17px;border-radius:4.5px;box-shadow:0 0 0 1px rgba(255,255,255,.7)}
+.nt-tx{flex:1;min-width:0;line-height:1.25}
+.nt-tx b{display:block;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt-tx p{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt time{align-self:flex-start;margin-top:12px;font-size:14px;color:#8a8a8e}
