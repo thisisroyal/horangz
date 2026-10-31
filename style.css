@@ -208,3 +208,5 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .nt-tx b{display:block;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nt-tx p{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nt time{align-self:flex-start;margin-top:12px;font-size:14px;color:#8a8a8e}
+.b.pic{display:block;width:200px;height:auto;max-height:290px;padding:0;border-radius:14px!important;object-fit:cover;background:#dbe3e9}
+.b.pic::before{display:none!important}

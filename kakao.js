@@ -15,7 +15,12 @@
     '한동': ['한동', 'handong'], 'Myeong': ['Myeong', 'myeong'],
   };
   const ROOMS = ['호랑이들', '11층', 'My girls', '김동', '한동', '성호오빠', '제로언니', 'Myeong', '상히기니'];
-  const MEDIA = {};                              // mediaKey -> image path, add files here when ready
+  const MEDIA = {                                // mediaKey -> [file in assets/media, width, height]
+    MEDIA_1: ['drama', 900, 437], MEDIA_2: ['woonhak-selfie', 675, 900], MEDIA_3: ['handong-elevator', 675, 900],
+    MEDIA_4: ['gini-blanket', 900, 676], MEDIA_NEMO: ['nemo', 416, 900], MEDIA_DORY: ['dory', 416, 900],
+    MEDIA_SOCKS: ['socks', 665, 900], MEDIA_MORNING_MEME: ['morning-meme', 394, 507],
+    MEDIA_CORPSE_BRIDE: ['corpse-bride', 528, 900], MEDIA_SUNGHO_PHOTO: ['sungho-photo', 675, 900],
+  };
   const K = 'assets/kakao/', P = n => `assets/profile/${PEOPLE[n]?.[1] || 'bini'}.jpg`;
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -241,7 +246,7 @@
   function bubble(f, endGroup, n) {
     const { m } = f, mine = m.isMe, named = f.start && !mine && n > 0;
     const body = f.call ? `<div class="b call">${I.call}Missed Voice Call</div>`
-      : f.media ? (MEDIA[m.mediaKey] ? `<img class="b ph" src="${MEDIA[m.mediaKey]}" alt="">` : `<div class="b ph">${I.pic}${esc(m.mediaCaption || '')}</div>`)
+      : f.media ? (MEDIA[m.mediaKey] ? `<img class="b pic" src="assets/media/${MEDIA[m.mediaKey][0]}.webp" width="${MEDIA[m.mediaKey][1]}" height="${MEDIA[m.mediaKey][2]}" loading="lazy" alt="">` : `<div class="b ph">${I.pic}${esc(m.mediaCaption || '')}</div>`)
       : `<div class="b">${esc(f.text)}</div>`;
     const meta = (f.lastOfMsg && m.unread ? `<i>${m.unread}</i>` : '') + (endGroup ? `<span>${t12(m.time)}</span>` : '');
     const cls = ['m', mine && 'me', f.start && 'g t', named && 'n'].filter(Boolean).join(' ');
