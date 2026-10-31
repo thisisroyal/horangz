@@ -61,7 +61,8 @@
   const el = document.createElement('section');
   el.id = 'kakao'; el.className = 'appview';
   $('#apps').append(el);
-  APPVIEWS.kakaotalk = { el, light: true, close: () => setTimeout(() => tab('friends'), 400) };
+  let resetT;
+  APPVIEWS.kakaotalk = { el, light: true, open: () => clearTimeout(resetT), close: () => (resetT = setTimeout(() => tab('friends'), 400)) };
 
   function load() {
     const s = document.createElement('script');
@@ -90,7 +91,7 @@
     const out = [];
     list.forEach((x, j) => {
       const same = list.filter(y => y.st === x.st), n = same.indexOf(x);
-      const at = START + (x.st - LIVE_FROM) * 6e4 + (2 + n * 50 / same.length) * 1e3;
+      const at = START + (x.st - LIVE_FROM) * 6e4 + (0.6 + n * 50 / same.length) * 1e3;
       const { m } = x, parts = m.mediaKey ? [{ ...m, lines: undefined, extraLines: undefined }] : [];
       (m.lines || []).forEach(t => parts.push({ ...m, mediaKey: undefined, lines: [t], extraLines: undefined }));
       parts.forEach((obj, i) => out.push({ k: x.k, obj, date: i ? null : x.date, at: at + i * 1400 }));
@@ -137,8 +138,9 @@
   const nt = document.createElement('div');
   nt.className = 'nt';
   nt.innerHTML = `<div class="nt-av"><img alt=""><img class="nt-app" src="assets/icons/kakaotalk.webp" alt=""></div><div class="nt-tx"><b></b><p></p></div><time>now</time>`;
-  let ntTimer;
+  let ntTimer, ntRoom;
   function notify(k, m) {
+    ntRoom = k;
     const who = PEOPLE[m.sender]?.[0] || m.sender, text = m.mediaKey ? 'Photo' : m.lines[0];
     nt.querySelector('.nt-av img').src = P(m.sender);
     nt.querySelector('b').textContent = PEOPLE[k] ? who : k;
@@ -155,9 +157,17 @@
   nt.addEventListener('pointermove', e => { if (sw) { const d = up(e); nt.style.transform = `translateY(${d > 0 ? -d : -d / 4}px)`; } });
   const end = e => {
     if (!sw) return;
-    const d = up(e); sw = null; nt.style.transition = nt.style.transform = '';
+    const d = up(e), tap = e.type === 'pointerup' && Math.hypot(e.clientX - sw.x, e.clientY - sw.y) < 8;
+    sw = null; nt.style.transition = nt.style.transform = '';
+    if (tap) return openFromBanner();
     if (d > 30) nt.classList.remove('on'); else ntTimer = setTimeout(() => nt.classList.remove('on'), 3000);
   };
+  function openFromBanner() {                      // tap: jump straight into that chat
+    nt.classList.remove('on');
+    go('port');
+    if (current !== APPVIEWS.kakaotalk) { closeApp(true); openApp('kakaotalk'); }
+    tab('chats'); openRoom(ntRoom);
+  }
   nt.addEventListener('pointerup', end); nt.addEventListener('pointercancel', end);
 
   /* ----- room helpers ----- */
