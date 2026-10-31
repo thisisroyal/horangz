@@ -22,6 +22,7 @@
     { ad: true, title: '[메디힐] 수분흔적세럼 1+1 리필기획 특가', icon: 'mediheal', text: '메디힐' },
     { title: '카카오이모티콘', icon: 'emoticon', when: [2025, 3, 3, '오전 11:02'], text: '(광고)1년권의 기회, 곧 끝나요⏰' },
     { title: '다이소멤버십', icon: 'daiso', when: [2025, 3, 2, '오후 1:45'], text: '[다이소몰] 보유 중이신 쿠폰의 유효기간을 안내드립니다. ...', badge: 10 },
+    { title: '내바보모임', n: 4, icon: 'babo', when: [2025, 3, 4, '오전 1:38'], text: '전시용 정신병아니고' },
     { title: '멜론', icon: 'melon', when: [2025, 3, 1, '오후 6:30'], text: '(광고)❤️4,600으로 6개월 음악 무제한' },
   ];
   const PLUS = [['photo', 'Photo'], ['camera', 'Camera'], ['call', 'Call'], ['gift', 'Gift Shop'], ['money', 'Money'], ['location', 'Location'],
