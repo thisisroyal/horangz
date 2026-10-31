@@ -112,8 +112,8 @@
     }
     // typing indicator: the next sender in the open room is "typing" for ~2.5s before the message lands
     const nx = queue[0], real = nx && inRoom(nx.k) && atBottom() && nx.at - simNow() < 2600 ? nx.obj.sender : null;
-    // 성호 keeps starting and stopping typing in his room once his scripted messages have arrived
-    const who = real || (tease && inRoom(FIRST) && !queue.some(q => q.k === FIRST) ? FIRST : null);
+    // 성호 keeps starting and stopping typing in his room from 10:38 until 10:45
+    const who = real || (tease && inRoom(FIRST) && simNow() < START + 7 * 6e4 ? FIRST : null);
     if (who !== typing) { typing = who; refreshRoom(true); }
   }
   let typing = null, tease = false;
