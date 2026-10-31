@@ -104,8 +104,10 @@
       if (date) msgs.push(date);
       msgs.push(obj);
       if (inRoom(k)) {
-        const seen = atBottom();
-        typing = null; refreshRoom(true);
+        const seen = atBottom(), ty = msgBox().querySelector('.ty-row');
+        typing = null;
+        if (ty) { ty.classList.add('out'); setTimeout(() => refreshRoom(true, true), 260); }   // dots fade, then the message rises in
+        else refreshRoom(true, true);
         if (!seen) newMsg(obj);
       } else { roomUnread[k] = (roomUnread[k] || 0) + 1; unread++; notify(k, obj); }
       badges(); refreshList();
@@ -114,7 +116,12 @@
     const nx = queue[0], real = nx && inRoom(nx.k) && atBottom() && nx.at - simNow() < 2600 ? nx.obj.sender : null;
     // 성호 keeps starting and stopping typing in his room from 10:38 until 10:45
     const who = real || (tease && inRoom(FIRST) && simNow() < START + 7 * 6e4 ? FIRST : null);
-    if (who !== typing) { typing = who; refreshRoom(true); }
+    if (who !== typing) {
+      const ty = !who && msgBox()?.querySelector('.ty-row:not(.out)');
+      typing = who;
+      if (ty) { ty.classList.add('out'); setTimeout(() => !typing && refreshRoom(true), 260); }
+      else refreshRoom(true, !!who);
+    }
   }
   let typing = null, tease = false;
   (function teaseLoop() {                         // irregular on/off rhythm: typing 1.5-6s, quiet 3-14s
@@ -225,7 +232,7 @@
       <div class="kt-hr"></div>
       <p class="kt-label">Friends ${names.length}<span><b>Alphabetical</b><em>·</em>Updates</span></p>
       <div class="kt-row"><img src="${K}recommend.webp" alt=""><div><p>Recommended Friends</p></div><span class="cnt">91${I.chev}</span></div>
-      ${names.map(n => `<div class="kt-row"><img src="${P(n)}" alt=""><div><p>${esc(PEOPLE[n][0])}</p></div></div>`).join('')}
+      ${cutLast(names.map(n => `<div class="kt-row"><img src="${P(n)}" alt=""><div><p>${esc(PEOPLE[n][0])}</p></div></div>`))}
     </div>`;
   }
   function chats() {
@@ -236,12 +243,14 @@
       ${list()}
     </div>`;
   }
+  // last row is cut and fades out: there seems to be more, but the list stops here
+  const cutLast = rows => rows.slice(0, -1).join('') + `<div class="kt-cut">${rows.at(-1)}</div>`;
   function list() {
     const rows = ROOMS.map(k => ({ k, ...lastInfo(k) })).sort((a, b) => b.stamp - a.stamp);
-    return `<div class="kt-list">${rows.map(r => {
+    return `<div class="kt-list">${cutLast(rows.map(r => {
         const n = PEOPLE[r.k] ? 0 : members(r.k).length + 1;
         return `<div class="kt-room" data-room="${esc(r.k)}">${groupAv(r.k)}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(title(r.k))}</b>${n ? `<i>${n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${roomUnread[r.k] ? `<b class="ur">${roomUnread[r.k]}</b>` : ''}</div>`;
-      }).join('')}</div>`;
+      }))}</div>`;
   }
 
   function build() {
@@ -316,10 +325,12 @@
     roomEl.classList.add('on');
     refreshRoom();
   }
-  function refreshRoom(keep) {
-    const box = msgBox(), atEnd = !keep || atBottom();
-    box.innerHTML = render(roomKey) + (typing ? `<div class="m g t n"><img class="av" src="${P(typing)}" alt=""><span class="who">${esc(PEOPLE[typing]?.[0] || typing)}</span><div class="b ty"><i></i><i></i><i></i></div></div>` : '');
-    if (atEnd) box.scrollTop = box.scrollHeight;
+  function refreshRoom(keep, anim) {
+    const box = msgBox(), atEnd = !keep || atBottom(), prev = box.querySelectorAll(':scope>:not(.ty-row)').length;
+    box.innerHTML = render(roomKey) + (typing ? `<div class="m g t n ty-row"><img class="av" src="${P(typing)}" alt=""><span class="who">${esc(PEOPLE[typing]?.[0] || typing)}</span><div class="b ty"><i></i><i></i><i></i></div></div>` : '');
+    if (anim) [...box.children].slice(prev).forEach(n => n.classList.add('pop'));
+    if (!atEnd) return;
+    if (anim) box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' }); else box.scrollTop = box.scrollHeight;
   }
   function closeRoom(instant) {
     if (!roomEl) return;
@@ -337,7 +348,7 @@
     if (![...msgs].reverse().find(m => m.type === 'date')?.date.startsWith(date.split(' ').slice(0, 3).join(' '))) msgs.push({ type: 'date', date });
     const n = PEOPLE[roomKey] ? 1 : members(roomKey).length;
     msgs.push({ sender: ME, isMe: true, time: `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${p.minute}`, unread: n, lines: [text] });
-    refreshRoom();
+    refreshRoom(false, true);
   }
 
   /* ----- keep the input above the on-screen keyboard (lifts the whole phone) ----- */

@@ -483,3 +483,15 @@ img{-webkit-user-drag:none}
 .go-x{width:30px;height:30px;display:grid;place-items:center;color:#555}
 .go-x svg{width:16px;height:16px;stroke-width:2.6}
 .go-pill{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);height:32px;padding:0 18px;border-radius:16px;background:rgba(255,255,255,.9);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15),0 4px 12px rgba(0,0,0,.08);font-size:14px;font-weight:500;color:#111}
+/* KakaoTalk: arriving messages rise in; typing dots fade out */
+.kt-msgs>.pop{animation:msgIn .42s cubic-bezier(.22,.9,.3,1) both}
+@keyframes msgIn{from{opacity:0;transform:translateY(14px)}}
+.kt-msgs>.ty-row{transition:opacity .25s ease,transform .25s ease}
+.kt-msgs>.ty-row.out{opacity:0;transform:translateY(-4px)}
+/* lists stop at a half-visible, fading last row */
+.kt-cut{position:relative;height:40px;overflow:hidden;pointer-events:none}
+.kt-cut::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.3),#fff 88%)}
+.kt-list .kt-cut{height:46px}
+/* chat rooms: the oldest messages fade under the header */
+.kt-msgs{padding-top:100px}
+.kt-msgs::before{content:"";position:absolute;z-index:1;left:0;right:0;top:100px;height:88px;background:linear-gradient(#abc1d1 12%,rgba(171,193,209,0));pointer-events:none}
