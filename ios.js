@@ -1,8 +1,8 @@
 'use strict';
 /* ===== Phone (Calls) and Messages (iMessage) ===== */
 (() => {
-  const PIC = { '한동': 'handong', '엄마': 'mom', '김동': 'kimdong', '비니비니 언니': 'bini', '운학이': 'woonhak', '상히기니': 'gini', '제로 언니': 'zero' };
-  const pic = n => `assets/profile/${PIC[n]}.jpg?2`;
+  const PIC = { '한동': 'handong', '엄마': 'mom', '김동': 'kimdong', '운학이': 'woonhak', '상히기니': 'gini', '제로 언니': 'zero' };
+  const pic = n => PIC[n] ? `assets/profile/${PIC[n]}.jpg?2` : 'assets/profile/ios-anon.svg';   // no photo saved: iOS default
   const sv = (d, vb = '0 0 24 24') => `<svg viewBox="${vb}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const I = {
     phone: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20.6 16.1v3a1.9 1.9 0 0 1-2.1 1.9A18.4 18.4 0 0 1 3 5.5 1.9 1.9 0 0 1 4.9 3.4h3a1.9 1.9 0 0 1 1.9 1.6c.1.9.4 1.8.7 2.6a1.9 1.9 0 0 1-.4 2L8.8 10.9a15 15 0 0 0 4.3 4.3l1.3-1.3a1.9 1.9 0 0 1 2-.4c.8.3 1.7.6 2.6.7a1.9 1.9 0 0 1 1.6 1.9z"/></svg>',
@@ -42,6 +42,10 @@
     ...[call('한동', 'missed', 'phone'), call('한동', 'in', 'phone'), call('한동', 'out', 'phone')].map(c => ({ ...c, date: '3/6/25' })),
     ...shuffle([call('엄마'), call('김동'), call('비니비니 언니'), call('비니비니 언니'), call('운학이'), call('운학이'), call('상히기니')]).map((c, i) => ({ ...c, date: DATES[i] })),
     { ...call('비니비니 언니', 'out', 'mobile'), date: '3/5/25' },      // 16 s
+    { ...call('성호 오빠', 'in', 'mobile'), date: '2/20/25' },
+    { ...call('김동', 'in'), date: '2/12/25' },
+    { ...call('성호 오빠', 'in', 'mobile'), date: '2/11/25' },
+    { ...call('상히기니', 'in'), date: '2/11/25' },
     { ...call('비니비니 언니', 'in', 'mobile'), date: '2/18/25' },      // 6:25 PM
     { ...call('비니비니 언니', 'missed', 'mobile'), date: '2/17/25' },  // 4:06 PM, then "콜백해줘"
   ].sort((a, b) => day(b.date) - day(a.date));
