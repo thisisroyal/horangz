@@ -9,8 +9,8 @@ const I = 'assets/icons/';
 // folders: [mini icon file, label, app id it opens (optional)]
 const F = {
   ect: [['appstore', 'App Store'], ['settings', 'Settings']],
-  productivity: [['prod0', 'Files'], ['prod1', 'Dropbox'], ['zoom', 'Zoom'], ['drive', 'Drive'], ['papago', 'Papago'], ['deepl', 'DeepL'], ['duolingo', 'Duolingo']],
-  utilities: [['compass', 'Compass'], ['measure', 'Measure'], ['calculator', 'Calculator'], ['wallet', 'Wallet'], ['findmy', 'Find My'], ['util5', 'Health'], ['util6', 'FaceTime'], ['voicememos', 'Voice Memos'], ['watch', 'Watch']],
+  productivity: [['files', 'Files'], ['dropbox', 'Dropbox'], ['zoom', 'Zoom'], ['drive', 'Drive'], ['papago', 'Papago'], ['deepl', 'DeepL'], ['duolingo', 'Duolingo']],
+  utilities: [['compass', 'Compass'], ['measure', 'Measure'], ['calculator', 'Calculator'], ['wallet', 'Wallet'], ['findmy', 'Find My'], ['health', 'Health'], ['facetime', 'FaceTime'], ['voicememos', 'Voice Memos'], ['watch', 'Watch']],
   ott: [['netflix', 'Netflix'], ['watcha', 'WATCHA', 'watcha']],
   sns: [['instagram', 'Instagram'], ['x', 'X'], ['youtube', 'YouTube']],
   ride: [['uber', 'Uber'], ['lyft', 'Lyft']],
@@ -40,8 +40,8 @@ function icon([id, name, o = {}]) {
   <line class="m" x1="50" y1="54" x2="50" y2="15" stroke="#000" stroke-width="2.4" stroke-linecap="round"/>
   <line class="s" x1="50" y1="60" x2="50" y2="12" stroke="#f19a38" stroke-width="1.2"/><circle cx="50" cy="50" r="2.2" fill="#f19a38"/></svg>`;
   else if (o.folder) inner = o.folder.map((m, i) =>
-    `<img src="${I}mini/${m}.webp" style="left:${MINI[i % 3]}px;top:${MINI[i / 3 | 0]}px" alt="" draggable="false">`).join('');
-  else inner = `<img src="${I + id}.webp" alt="" draggable="false">`;
+    `<img src="${I}mini/${m}.webp?2" style="left:${MINI[i % 3]}px;top:${MINI[i / 3 | 0]}px" alt="" draggable="false">`).join('');
+  else inner = `<img src="${I + id}.webp?2" alt="" draggable="false">`;
   const cls = o.type || (o.folder ? 'folder' : '');
   return `<div class="app" data-app="${id}"><div class="ico ${cls}">${inner}${o.badge ? `<span class="badge">${o.badge}</span>` : ''}</div>${name ? `<span class="label">${name}</span>` : ''}</div>`;
 }
@@ -125,7 +125,7 @@ $('#home').append(fv);
 function openFolder(id, from) {
   const name = APPS.find(a => a[0] === id)[1], r = from.getBoundingClientRect(), h = $('#home').getBoundingClientRect(), k = h.width / 402;
   fv.innerHTML = `<h2>${name}</h2><div class="fv-box">${F[id].map(([m, t, app]) =>
-    `<div class="app"${app ? ` data-app="${app}"` : ''}><div class="ico"><img src="${I}${m.startsWith('util') || m.startsWith('prod') ? 'mini/' : ''}${m}.webp" alt="" draggable="false"></div><span class="label">${t}</span></div>`).join('')}</div>`;
+    `<div class="app"${app ? ` data-app="${app}"` : ''}><div class="ico"><img src="${I + m}.webp?2" alt="" draggable="false"></div><span class="label">${t}</span></div>`).join('')}</div>`;
   const box = fv.querySelector('.fv-box'), b = box.getBoundingClientRect();
   box.style.setProperty('--fx', (r.left + r.width / 2 - (b.left + b.width / 2)) / k + 'px');
   box.style.setProperty('--fy', (r.top + r.height / 2 - (b.top + b.height / 2)) / k + 'px');
