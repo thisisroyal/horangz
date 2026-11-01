@@ -63,6 +63,14 @@ const sbTime = $('.sb-time'), calB = $('.cal b'), calN = $('.cal span');
 const [hH, hM, hS] = ['.h', '.m', '.s'].map(c => $('.clk ' + c));
 const rot = (el, deg) => el.setAttribute('transform', `rotate(${deg} 50 50)`);
 
+// battery: 72% at 10:41 PM, charging, +1% every 3 minutes of phone time, up to 100%
+const batI = $('.sb-bat i'), batB = $('.sb-bat b');
+let batLv = 0;
+function battery(d) {
+  const lv = Math.min(100, 72 + Math.floor((d - START) / 18e4));
+  if (lv === batLv) return;
+  batLv = lv; batB.textContent = lv; batI.style.right = 100 - lv + '%';
+}
 function tick() {
   const d = simNow();
   const p = Object.fromEntries(fParts.formatToParts(d).map(x => [x.type, x.value]));
@@ -70,6 +78,7 @@ function tick() {
   calB.textContent = p.weekday; calN.textContent = p.day;
   const s = +p.second, m = +p.minute + s / 60;
   rot(hS, s * 6); rot(hM, m * 6); rot(hH, (+p.hour % 12 + m / 60) * 30);
+  battery(d);
   setTimeout(tick, (1000 - ((performance.now() - t0) * SPEED % 1000)) / SPEED);
 }
 tick();
