@@ -177,6 +177,8 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .b.ph{width:180px;height:180px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;background:#dbe3e9;color:#6c7c88;font-size:12px;border-radius:14px}
 .b.ph::before{display:none}
 .b.ph svg{width:30px;height:30px;margin:auto}
+.b.del{display:flex;align-items:center;gap:5px;padding-left:9px;color:#555}
+.b.del i{display:grid;place-items:center;width:15px;height:15px;border-radius:50%;background:#ccc;color:#fff;font-size:11px;font-weight:800;font-style:normal;line-height:1}
 .b.call{display:flex;align-items:center;justify-content:space-between;width:138px;height:46px;padding:0 15px 0 12px;font-size:16px}
 .m.t .b.call{border-top-left-radius:16px}.m.t .b.call::before{content:none}
 .b.call svg{overflow:visible}
@@ -626,7 +628,7 @@ img{-webkit-user-drag:none}
 .im.out.tail span::after{right:8px;bottom:-7px;width:16px;height:13px;clip-path:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 13'%3E%3Cpath d='M0 0Q4 9 15.5 13Q13.6 8 14 0Z' fill='%2359a6f5'/%3E%3C/svg%3E") 0 0/100% 100%}
 .im-st{margin:14px 0 8px;text-align:center;font-size:12.5px;color:#8a8a8e}
 .im-st b{font-weight:600}
-.im-rd{margin:-6px 4px 10px;text-align:right;font-size:12.5px;color:#8a8a8e}
+.im-rd{margin:-3px 22px 10px 0;text-align:right;font-size:13px;color:#8a8a8e}
 .im-rd b{font-weight:600}
 .im-in{position:absolute;z-index:2;left:24px;right:24px;bottom:28px;display:flex;align-items:center;gap:12px}
 .im-in .circ{width:40px;height:40px;border-radius:20px}

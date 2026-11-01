@@ -842,7 +842,7 @@ window.chatData = {
     { sender: "한동", isMe: false, time: "오전 2:08", lines: ["쏘리", "삼분"] },
     { sender: "은여주", isMe: true, time: "오전 2:08", lines: ["짜증."] },
     { type: "date", date: "2025년 1월 26일 일요일" },
-    { sender: "한동", isMe: false, time: "오후 6:28", lines: ["삭제된 메세지입니다."] },
+    { sender: "한동", isMe: false, time: "오후 6:28", deleted: true, lines: ["삭제된 메세지입니다."] },
     { sender: "은여주", isMe: true, time: "오후 6:34", lines: ["??", "무야"] },
     { sender: "한동", isMe: false, time: "오후 6:34", lines: ["ㄴㄴ 잘못보냄", "밥 먹음?"] },
     { sender: "은여주", isMe: true, time: "오후 6:34", lines: ["아니...", "뭐 시킬지", "고민중이었"] },

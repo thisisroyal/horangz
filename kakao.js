@@ -124,7 +124,7 @@
         if (st >= UNSEEN && st < LIVE_FROM) unread += n;   // older unread is already inside the 530
         if (st < LIVE_FROM && (st >= UNSEEN || k === GROUP && st > KEEP1)) roomUnread[k] = (roomUnread[k] || 0) + n;
         if (st >= D7) { if (k === GROUP && st < LIVE_FROM) (st < UNSEEN ? speakPre : speak)(m); continue; }
-        if (k === GROUP && st > KEEP1) m.unread = 1; else delete m.unread;
+        if (k === GROUP && st > KEEP1 || m.deleted) m.unread = 1; else delete m.unread;   // a message deleted before 여주 saw it keeps its 1
       }
     }
   }
@@ -415,6 +415,7 @@
     const { m } = f, mine = m.isMe, named = f.start && !mine && n > 0;
     const body = f.call ? `<div class="b call">${f.call === 'voice' ? I.call + '보이스톡' : I.callx + '부재중'}</div>`
       : f.media ? (MEDIA[m.mediaKey] ? `<img class="b pic" src="assets/media/${MEDIA[m.mediaKey][0]}.webp" width="${MEDIA[m.mediaKey][1]}" height="${MEDIA[m.mediaKey][2]}" loading="lazy" alt="">` : `<div class="b ph">${I.pic}${esc(m.mediaCaption || '')}</div>`)
+      : m.deleted ? `<div class="b del"><i>!</i>${esc(f.text)}</div>`
       : `<div class="b">${mention(esc(f.text))}</div>`;
     const meta = (f.lastOfMsg && m.unread ? `<i>${m.unread}</i>` : '') + (endGroup ? `<span>${t12(m.time)}</span>` : '');
     const cls = ['m', mine && 'me', f.start && 'g t', named && 'n'].filter(Boolean).join(' ');
