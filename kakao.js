@@ -95,24 +95,27 @@
 
   /* ----- read counts (the yellow numbers) -----
      Before 3/7 everything is read, except 호랑이들 after 3/5 3:34 PM where 여주 never looked (a 1 stays).
-     호랑이들 on 3/7 (history and live): the first message shows 8; each time someone speaks for the first time
-     that day, every earlier count above 1 drops by one and their message shows the previous count minus one;
-     a returning speaker changes nothing and repeats the previous count. Counts stay within 1-8 and never rise. */
+     호랑이들 on 3/7: counting restarts at the first live message (상히기니's 10:38 photo), which shows 8.
+     From there each message shows the previous count, minus one when its sender is new since that photo
+     (then every earlier count above 1 also drops by one). Counts stay within 1-8 and never rise.
+     The 10:35-10:37 messages before it follow the same rule among themselves, and also drop when
+     someone who was not part of them speaks later. */
   const GROUP = '호랑이들', D7 = Date.UTC(2025, 2, 7) / 6e4, KEEP1 = Date.UTC(2025, 2, 5) / 6e4 + 15 * 60 + 34;
-  const spoke = new Set(), today = [];
-  function speak(m) {
-    const prev = today.length ? today.at(-1).unread : 9, fresh = !spoke.has(m.sender);
-    if (fresh) { spoke.add(m.sender); today.forEach(t => t.unread > 1 && t.unread--); }
-    m.unread = Math.min(8, Math.max(1, prev - (fresh ? 1 : 0)));
-    today.push(m);
+  const pre = { spoke: new Set(), list: [] }, base = { spoke: new Set(), list: [] };
+  function count(g, m, add) {
+    const prev = g.list.length ? g.list.at(-1).unread : 9, fresh = !g.spoke.has(m.sender);
+    if (fresh) { g.spoke.add(m.sender); g.list.forEach(t => t.unread > 1 && t.unread--); }
+    if (add) { m.unread = Math.min(8, Math.max(1, prev - fresh)); g.list.push(m); }
   }
+  const speakPre = m => count(pre, m, true);
+  const speak = m => { count(pre, m, false); count(base, m, true); };
   function readState() {
     for (const [k, msgs] of Object.entries(data)) {
       let date = '';
       for (const m of msgs) {
         if (m.type === 'date') { date = m.date; continue; }
         const [y, mo, d] = ymd(date), st = Date.UTC(y, mo - 1, d) / 6e4 + mins(m.time);
-        if (st >= D7) { if (k === GROUP && st < LIVE_FROM) speak(m); continue; }
+        if (st >= D7) { if (k === GROUP && st < LIVE_FROM) speakPre(m); continue; }
         if (k === GROUP && st > KEEP1) m.unread = 1; else delete m.unread;
       }
     }
@@ -215,8 +218,7 @@
     el.querySelectorAll('.kt-unread').forEach(b => b.textContent = unread);
   }
   const refreshList = () => {
-    const l = el.querySelector('.kt-list'); if (!l) return;
-    const y = l.scrollTop; l.outerHTML = list(); el.querySelector('.kt-list').scrollTop = y;
+    const r = el.querySelector('.kt-rows'); if (r) r.outerHTML = rows();
   };
 
   /* ----- banner notification ----- */
@@ -311,7 +313,6 @@
     return `<div class="sc kt-chats" hidden>
       ${head('Chats', I.search + I.newchat + I.gear)}
       <div class="kt-pills"><span class="on">All</span><span><img src="${K}pill-chat.webp" alt=""><i class="n kt-unread">${unread}</i></span><span>ChatGPT <i class="n">N</i></span><span class="i"><img src="${K}pill-call.webp" alt=""></span><span class="i"><img src="${K}pill-plus.webp" alt=""></span></div>
-      ${banner}
       ${list()}
     </div>`;
   }
@@ -320,11 +321,12 @@
   const staticRow = r => r.ad
     ? `<div class="kt-room kt-ad"><img class="oi" src="${O + r.icon}.webp" alt=""><div class="tx"><div class="nm"><b>${esc(r.title)}</b></div><p class="pv"><i class="adt">AD</i>${esc(r.text)}</p></div><span class="buy">구매하기</span></div>`
     : `<div class="kt-room kt-static">${r.icon ? `<img class="oi" src="${O + r.icon}.webp" alt="">` : `<div class="av av2">${r.av.map(a => `<img src="assets/profile/${a}.jpg?2" alt="">`).join('')}</div>`}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(r.title)}</b>${r.n ? `<i>${r.n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${r.badge ? `<b class="ur">${r.badge}</b>` : ''}</div>`;
-  function list() {
+  const list = () => `<div class="kt-list">${banner}${rows()}</div>`;   // the banner scrolls with the rows
+  function rows() {
     const st = STATIC.filter(r => !r.ad).map(r => { const [y, mo, d, time] = r.when; return { ...r, y, mo, d, time, stamp: Date.UTC(y, mo - 1, d) / 6e4 + mins(time) }; });
-    const rows = [...ROOMS.map(k => ({ k, ...lastInfo(k) })), ...st].sort((a, b) => b.stamp - a.stamp);
-    const ad = STATIC.find(r => r.ad), gi = rows.findIndex(r => r.icon === 'gift');
-    return `<div class="kt-list">${rows.map((r, i) => {
+    const rs = [...ROOMS.map(k => ({ k, ...lastInfo(k) })), ...st].sort((a, b) => b.stamp - a.stamp);
+    const ad = STATIC.find(r => r.ad), gi = rs.findIndex(r => r.icon === 'gift');
+    return `<div class="kt-rows">${rs.map((r, i) => {
         if (!r.k) return staticRow(r) + (i === gi ? staticRow(ad) : '');
         const n = PEOPLE[r.k] ? 0 : members(r.k).length + 1;
         return `<div class="kt-room" data-room="${esc(r.k)}">${groupAv(r.k)}<div class="tx"><div class="nm"><span style="display:flex;min-width:0"><b>${esc(title(r.k))}</b>${n ? `<i>${n}</i>` : ''}</span><time>${when(r)}</time></div><p class="pv">${esc(r.text)}</p></div>${roomUnread[r.k] ? `<b class="ur">${roomUnread[r.k]}</b>` : ''}</div>`;

@@ -45,7 +45,7 @@
     { ...call('성호 오빠', 'in', 'mobile'), date: '2/20/25' },
     { ...call('김동', 'in'), date: '2/12/25' },
     { ...call('성호 오빠', 'in', 'mobile'), date: '2/11/25' },
-    { ...call('상히기니', 'in'), date: '2/11/25' },
+    { ...call('상히기니', 'out'), date: '2/11/25' },
     { ...call('비니비니 언니', 'in', 'mobile'), date: '2/18/25' },      // 6:25 PM
     { ...call('비니비니 언니', 'missed', 'mobile'), date: '2/17/25' },  // 4:06 PM, then "콜백해줘"
   ].sort((a, b) => day(b.date) - day(a.date));

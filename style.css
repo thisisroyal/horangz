@@ -212,20 +212,15 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .nt time{align-self:flex-start;margin-top:12px;font-size:14px;color:#8a8a8e}
 .b.pic{display:block;width:200px;height:auto;max-height:290px;padding:0;border-radius:14px!important;object-fit:cover;background:#dbe3e9}
 .b.pic::before{display:none!important}
-/* KakaoTalk: white strip behind the status bar; Chats header, filters and banner stay put */
-#kakao::before{content:"";position:absolute;top:0;left:0;right:0;height:54px;background:#fff;z-index:3}
-.kt-chats{display:flex;flex-direction:column;overflow:hidden}
-.sc[hidden]{display:none}
-.kt-chats .kt-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;margin-top:8px}
-.kt-chats .kt-list::-webkit-scrollbar{display:none}
-/* KakaoTalk: white strip behind the status bar; Chats tab keeps its header and banner fixed */
+/* KakaoTalk: white strip behind the status bar; Chats header and filters stay put, the banner scrolls with the list */
+#kakao::before{content:"";position:absolute;z-index:3;top:0;left:0;right:0;height:54px;background:#fff}
 .kt-sb{position:absolute;top:0;left:0;right:0;height:54px;background:#fff;z-index:4}
+.sc[hidden]{display:none}
 .kt-chats:not([hidden]){display:flex;flex-direction:column;overflow:hidden}
 .kt-chats>:not(.kt-list){flex:none}
 .kt-chats .kt-list{flex:1;min-height:0;margin-top:8px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
 .kt-chats .kt-list::-webkit-scrollbar{display:none}
-/* KakaoTalk: white strip behind the status bar; Chats header stays put while the list scrolls */
-#kakao::before{content:"";position:absolute;z-index:3;top:0;left:0;right:0;height:54px;background:#fff}
+.kt-list>.kt-banner{margin:0 16px 16px}
 #kakao .kt-chats{display:flex;flex-direction:column;overflow:hidden}
 #kakao .sc[hidden]{display:none}
 .kt-chats .kt-list{flex:1;min-height:0;margin-top:8px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
