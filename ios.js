@@ -134,7 +134,7 @@
     return `<div class="im ${k}${tail ? ' tail' : ''}"><span>${a}</span></div>`;
   }).join('');
   // older messages peek out above the first date and fade away: there is more, but the scroll stops here
-  const OLDER = { bini: [['in', '여주 지금 학교야?'], ['out', '웅 14층!']], gini: [['out', 'ㅇㅋㅇㅋ 이따봐'], ['in', '웅 도착하면 연락해']] };
+  const OLDER = { bini: [['in', '여주 지금 학교야?'], ['out', '웅 14층!']], gini: [['out', 'ㅇㅋㅇㅋ 이따봐'], ['in', 'ㅇㅋㅇㅋ']] };
   const chatHtml = (CHAT, id) => `<div class="im-more">${bubbles(OLDER[id] || [])}</div>${bubbles(CHAT)}`;
 
   const ms = app('msg-app', `
