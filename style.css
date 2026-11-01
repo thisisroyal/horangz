@@ -498,7 +498,7 @@ img{-webkit-user-drag:none;-webkit-touch-callout:none}
 .kt-ad .adt{display:inline-block;font-style:normal;font-size:11px;font-weight:700;line-height:16px;padding:0 4px;margin-right:6px;border-radius:3px;box-shadow:inset 0 0 0 1px #bbb;color:#555;vertical-align:1px}
 .kt-ad .buy{flex:none;height:32px;padding:0 13px;border-radius:16px;box-shadow:inset 0 0 0 1px #d6d6d6;font-size:14px;line-height:32px;color:#222}
 /* Friends tab: fade lightly covers the lower third of the last profile picture (40px photo, 8px under it) */
-.kt-friends .kt-fade{height:21px;margin-top:-21px;background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.8) 62%,#fff)}
+.kt-friends .kt-fade{height:40px;margin-top:-40px;background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.8) 62%,#fff)}
 .kt-plus span{opacity:0;transform:translateY(12px);transition:opacity .2s,transform .3s cubic-bezier(.32,.72,0,1)}
 .plus-on .kt-plus span{opacity:1;transform:none;transition:opacity .35s,transform .5s cubic-bezier(.32,.72,0,1);transition-delay:calc(.06s + var(--i) * .018s)}
 .b .at{color:#3a6ccf}
@@ -543,7 +543,7 @@ img{-webkit-user-drag:none;-webkit-touch-callout:none}
 .cl time{font-size:16px;color:#8a8a8e;margin-right:2px}
 .ios-cbtn{width:40px;height:40px;border-radius:50%;background:#f2f2f4;display:grid;place-items:center;color:#2f7ff5;flex:none}
 .ios-cbtn svg{width:19px;height:19px}
-.ios-fade{position:relative;height:30px;margin-top:-30px;margin-bottom:110px;background:linear-gradient(rgba(255,255,255,0),#fff);pointer-events:none}
+.ios-fade{position:relative;height:30px;margin-top:-30px;margin-bottom:56px;background:linear-gradient(rgba(255,255,255,0),#fff);pointer-events:none}   /* the last row stops half hidden under the bottom bar */
 .ios-fade.th-fade{height:58px;margin-top:-58px}   /* bottom two thirds of the last (two-line) thread */
 .ios-tabs{position:absolute;z-index:2;left:20px;right:20px;bottom:20px;display:flex;align-items:center;justify-content:space-between}
 .glass3{display:flex;height:61px;width:290px;padding:4px;border-radius:31px;background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12),0 6px 22px rgba(0,0,0,.08)}
