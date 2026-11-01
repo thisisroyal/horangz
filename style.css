@@ -265,7 +265,9 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .chk li.on i{background:#e5a913;box-shadow:none}
 .chk li.on i::after{content:"";position:absolute;left:7px;top:3.5px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .ntxt{font-size:19.5px;color:#454545;line-height:1.4;margin-top:24px;word-break:break-all;white-space:pre-line}
-img{-webkit-user-drag:none}
+img{-webkit-user-drag:none;-webkit-touch-callout:none}
+/* no long-press save sheet / callout anywhere on the phone */
+#device{-webkit-touch-callout:none}
 .nt{touch-action:none}
 /* KakaoTalk: typing indicator and new-message bar */
 .b.ty{display:flex;align-items:center;gap:3.5px;height:36px;padding:0 12px;background:#8a98a3}

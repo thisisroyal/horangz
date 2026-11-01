@@ -4,10 +4,10 @@
   const G = 'assets/gmail/';
   const MAILS = [
     { av: 'info', from: 'info', date: 'Mar 6', subj: 'Your order 52603 is on its way', snip: '📦 Your order is on its way Hi Yeoju, Your order is on its way and will arrive soon.', read: true },
-    { av: 'dnr', from: 'do-not-reply', date: 'Mar 6', subj: 'Hill tool center Checkout Return Reminder', snip: 'Dear Yeoju Eun: As a reminder, the following items are due back soon.', read: true },
+    { av: 'dnr', from: 'do-not-reply', date: 'Mar 6', subj: 'Studio Equipment Center Checkout Return Reminder', snip: 'Dear Yeoju Eun: As a reminder, the following items are due back soon.', read: true },
     { av: 'handshake', from: 'Handshake', date: 'Mar 5', subj: '"Your first job alert": Arts of Life - Chicago', snip: 'Handshake YE New matches for your saved search' },
     { promo: true },
-    { av: 'handshake', from: 'Handshake', date: 'Mar 4', subj: '"Search on 9/14/2024": Teaching Assistant', snip: 'Handshake YE New matches for your saved search' },
+    { av: 'info', from: 'Student Affairs', date: 'Mar 4', subj: 'Spring Break Building Hours & Studio Access', snip: 'Dear students, campus buildings will run on reduced hours over spring break. Please plan your studio time accordingly.' },
     { av: 'amazon', from: 'Amazon Marketplace', date: 'Mar 3', subj: 'Yeoju Eun, will you rate your transaction with us?', snip: 'Hi Yeoju Eun, Rate your experience with the seller' },
     { av: 'person', from: 'Donghyun Kim', date: 'Feb 28', subj: '누나 안녕', snip: 'ㅎㅎ', read: true, starred: true, open: true },
     { av: 'linkedin', from: 'LinkedIn', date: 'Feb 26', subj: 'Learning Spotlight: Cybersecurity Starter Kit', snip: 'Practical Skills for Staying Secure' },

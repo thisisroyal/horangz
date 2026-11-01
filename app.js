@@ -116,6 +116,10 @@ const SND = (() => {
   };
 })();
 
+/* ===== Discourage saving: no right-click / long-press menu and no dragging images or audio out of the page ===== */
+addEventListener('contextmenu', e => { if (!e.target.closest('input,textarea')) e.preventDefault(); });
+addEventListener('dragstart', e => e.preventDefault());
+
 /* ===== Navigation: player (landscape) <-> home <-> apps ===== */
 const APPVIEWS = {};                               // id -> { el, open(), close() } registered by app modules
 let current = null;
