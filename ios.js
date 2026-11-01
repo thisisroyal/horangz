@@ -36,13 +36,19 @@
   const KINDS = ['in', 'missed', 'out'], LABELS = ['phone', 'mobile'];
   const pick = a => a[Math.random() * a.length | 0];
   const call = (who, kind = pick(KINDS), label = pick(LABELS)) => ({ who, kind, label: label + (kind !== 'out' && Math.random() < .35 ? ' (2)' : '') });
-  const calls = [call('한동', 'missed', 'phone'), call('한동', 'in', 'phone'), call('한동', 'out', 'phone'),
-    ...shuffle([call('엄마'), call('김동'), call('비니비니 언니'), call('비니비니 언니'), call('운학이'), call('운학이'), call('상히기니')])];
-  const DATES = ['3/6/25', '3/6/25', '3/6/25', '3/5/25', '3/4/25', '3/4/25', '3/2/25', '2/28/25', '2/26/25', '2/23/25'];
-  const callRow = (c, i) => `<div class="ios-row cl">
+  const DATES = ['3/5/25', '3/4/25', '3/4/25', '3/2/25', '2/28/25', '2/26/25', '2/23/25'];
+  const day = d => { const [m, dd, y] = d.split('/'); return y * 1e4 + m * 100 + +dd; };
+  const calls = [
+    ...[call('한동', 'missed', 'phone'), call('한동', 'in', 'phone'), call('한동', 'out', 'phone')].map(c => ({ ...c, date: '3/6/25' })),
+    ...shuffle([call('엄마'), call('김동'), call('비니비니 언니'), call('비니비니 언니'), call('운학이'), call('운학이'), call('상히기니')]).map((c, i) => ({ ...c, date: DATES[i] })),
+    { ...call('비니비니 언니', 'out', 'mobile'), date: '3/5/25' },      // 16 s
+    { ...call('비니비니 언니', 'in', 'mobile'), date: '2/18/25' },      // 6:25 PM
+    { ...call('비니비니 언니', 'missed', 'mobile'), date: '2/17/25' },  // 4:06 PM, then "콜백해줘"
+  ].sort((a, b) => day(b.date) - day(a.date));
+  const callRow = c => `<div class="ios-row cl">
       <img class="av" src="${pic(c.who)}" alt="">
       <div class="tx"><b${c.kind === 'missed' ? ' class="red"' : ''}>${c.who}</b><p>${c.kind === 'out' ? I.out : I.inc}${tag}${c.kind === 'out' ? '' : chk}${c.label}</p></div>
-      <time>${DATES[i]}</time><span class="ios-cbtn">${I.phone}</span></div>`;
+      <time>${c.date}</time><span class="ios-cbtn">${I.phone}</span></div>`;
   const ph = app('phone-app', `
     <div class="ios-sc">${calls.map(callRow).join('')}<div class="ios-fade"></div></div>
     <header class="ios-hd"><span class="pill">Edit</span><h1>Calls</h1><span class="circ">${I.filter}</span></header>
@@ -68,6 +74,13 @@
 
   // conversation with 비니비니 언니 (iMessage)
   const CHAT = [
+    ['stamp', 'Mon, Feb 17', '4:06 PM'],
+    ['in', '여주'], ['in', '시간되면 콜백해줘!'],
+    ['stamp', 'Tue, Feb 18', '5:32 PM'],
+    ['in', '여주야 바빠?'], ['in', '밥 먹자!!'],
+    ['out', 'ㅋㅋㅋㅋ ㅠㅠ'], ['out', '잘먹었습니다~~~'],
+    ['in', '그래 밥 챙기면서 해'],
+    ['out', '네!!!!!'], ['read', '2/18/25'],
     ['in', '내가 끝나면 13층갈게'], ['in', '근게 유정이는 진짜 괜찮아해서'], ['in', '나도 배고파'],
     ['out', '아니근데 담에 셋이서가자 내가 지금 힘이없음'], ['out', 'ㅋㅋ..'],
     ['in', 'ㅇㅋㅇㅋ'],

@@ -1073,7 +1073,8 @@ window.chatData = {
 
     { type: "date", date: "2025년 3월 7일 금요일" },
     { sender: "성호오빠", isMe: false, time: "오후 10:38", mediaKey: "MEDIA_SUNGHO_PHOTO", mediaCaption: "성호 셀카 사진" },
-    { sender: "성호오빠", isMe: false, time: "오후 10:40", lines: ["아 잘못보냈어 ㅋㅋㅋㅋ", "밥 좀 먹어 요즘?"] }
+    { sender: "성호오빠", isMe: false, time: "오후 10:41", lines: ["아 잘못보냈어 ㅋㅋㅋㅋ"] },
+    { sender: "성호오빠", isMe: false, time: "오후 10:43", lines: ["밥 좀 먹어 요즘?"] }
   ],
 
   "제로언니": [

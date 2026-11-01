@@ -135,14 +135,21 @@
     }
     list.sort((a, b) => a.st - b.st || (b.k === FIRST) - (a.k === FIRST) || a.i - b.i);
     const out = [];
-    list.forEach((x, j) => {
+    let last = null;                                // previous bubble in 호랑이들
+    list.forEach(x => {
       const same = list.filter(y => y.st === x.st), n = same.indexOf(x);
-      const at = START + (x.st - LIVE_FROM) * 6e4 + (0.6 + n * 50 / same.length) * 1e3;
+      let at = START + (x.st - LIVE_FROM) * 6e4 + (0.6 + n * 50 / same.length) * 1e3;
       const { m } = x, parts = m.mediaKey ? [{ ...m, lines: undefined, extraLines: undefined }] : [];
       (m.lines || []).forEach(t => parts.push({ ...m, mediaKey: undefined, lines: [t], extraLines: undefined }));
-      // 성호's two lines at 10:40 are as far apart as the minute allows (first at :00, second at :58)
-      const gap = x.k === FIRST && parts.length > 1 ? (58e3 - 600) / (parts.length - 1) : 1400;
-      parts.forEach((obj, i) => { if (i) obj.part = true; out.push({ k: x.k, obj, date: i ? null : x.date, at: at + i * gap }); });
+      parts.forEach((obj, i) => {
+        if (x.k === GROUP) {
+          // same sender twice in a row: 5-8 real seconds apart; a new sender never lands before the previous bubble
+          if (last) at = last.sender === m.sender ? last.at + (5e3 + Math.random() * 3e3) * SPEED : Math.max(at, last.at + 1500 * SPEED);
+          last = { sender: m.sender, at };
+        } else if (i) at += 1400;
+        if (i) obj.part = true;
+        out.push({ k: x.k, obj, date: i ? null : x.date, at });
+      });
     });
     return out.sort((a, b) => a.at - b.at);
   }
