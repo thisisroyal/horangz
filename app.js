@@ -10,7 +10,7 @@ const I = 'assets/icons/';
 const F = {
   ect: [['appstore', 'App Store'], ['settings', 'Settings']],
   productivity: [['prod0', 'Files'], ['prod1', 'Dropbox'], ['zoom', 'Zoom'], ['drive', 'Drive'], ['papago', 'Papago'], ['deepl', 'DeepL'], ['duolingo', 'Duolingo']],
-  utilities: ['Compass', 'Measure', 'Calculator', 'Wallet', 'Find My', 'Health', 'FaceTime', 'Voice Memos', 'Watch'].map((t, i) => ['util' + i, t]),
+  utilities: [['compass', 'Compass'], ['measure', 'Measure'], ['calculator', 'Calculator'], ['wallet', 'Wallet'], ['findmy', 'Find My'], ['util5', 'Health'], ['util6', 'FaceTime'], ['voicememos', 'Voice Memos'], ['watch', 'Watch']],
   ott: [['netflix', 'Netflix'], ['watcha', 'WATCHA', 'watcha']],
   sns: [['instagram', 'Instagram'], ['x', 'X'], ['youtube', 'YouTube']],
   ride: [['uber', 'Uber'], ['lyft', 'Lyft']],
