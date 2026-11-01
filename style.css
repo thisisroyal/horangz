@@ -131,6 +131,8 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .av2 img{width:30px;height:30px;border-radius:11.5px}
 .av2 img:first-child{left:0;top:0}
 .av2 img:last-child{right:0;bottom:0;box-shadow:0 0 0 1.5px #fff}
+.av4 img{width:22.5px;height:22.5px;border-radius:8.5px}
+.av4 img:nth-child(2n){right:0}.av4 img:nth-child(n+3){bottom:0}
 .kt-room .tx{flex:1;min-width:0;padding-top:2px}
 .kt-room .nm{display:flex;justify-content:space-between;gap:8px;font-size:17px;line-height:22px}
 .kt-room .nm b{font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
