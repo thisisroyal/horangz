@@ -137,9 +137,11 @@
       const at = START + (x.st - LIVE_FROM) * 6e4 + (0.6 + n * 50 / same.length) * 1e3;
       const { m } = x, parts = m.mediaKey ? [{ ...m, lines: undefined, extraLines: undefined }] : [];
       (m.lines || []).forEach(t => parts.push({ ...m, mediaKey: undefined, lines: [t], extraLines: undefined }));
-      parts.forEach((obj, i) => { if (i) obj.part = true; out.push({ k: x.k, obj, date: i ? null : x.date, at: at + i * 1400 }); });
+      // 성호's two lines at 10:40 are as far apart as the minute allows (first at :00, second at :58)
+      const gap = x.k === FIRST && parts.length > 1 ? (58e3 - 600) / (parts.length - 1) : 1400;
+      parts.forEach((obj, i) => { if (i) obj.part = true; out.push({ k: x.k, obj, date: i ? null : x.date, at: at + i * gap }); });
     });
-    return out;
+    return out.sort((a, b) => a.at - b.at);
   }
   function arrive() {
     while (queue.length && queue[0].at <= simNow()) {
