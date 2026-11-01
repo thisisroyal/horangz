@@ -53,7 +53,8 @@
     chev: ic('<path d="m9 5 7 7-7 7"/>'),
     down: ic('<path d="m5 9 7 7 7-7"/>'),
     pic: ic('<rect x="3" y="4.5" width="18" height="15" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-9 8.5"/>'),
-    call: '<svg viewBox="0 0 24 24"><path d="M21 16.5v3a1.8 1.8 0 0 1-2 1.8A17.8 17.8 0 0 1 2.7 5 1.8 1.8 0 0 1 4.5 3h3a1.8 1.8 0 0 1 1.8 1.5c.1.9.4 1.8.7 2.6a1.8 1.8 0 0 1-.4 1.9L8.4 10.2a14.4 14.4 0 0 0 5.4 5.4l1.2-1.2a1.8 1.8 0 0 1 1.9-.4c.8.3 1.7.6 2.6.7a1.8 1.8 0 0 1 1.5 1.8z" fill="#e5483c"/></svg>',
+    call: '<svg viewBox="0 0 24 24"><path d="M21 16.5v3a1.8 1.8 0 0 1-2 1.8A17.8 17.8 0 0 1 2.7 5 1.8 1.8 0 0 1 4.5 3h3a1.8 1.8 0 0 1 1.8 1.5c.1.9.4 1.8.7 2.6a1.8 1.8 0 0 1-.4 1.9L8.4 10.2a14.4 14.4 0 0 0 5.4 5.4l1.2-1.2a1.8 1.8 0 0 1 1.9-.4c.8.3 1.7.6 2.6.7a1.8 1.8 0 0 1 1.5 1.8z" fill="#1fb245"/></svg>',
+    callx: '<svg viewBox="0 0 24 24"><path transform="translate(-1.5 2.5) scale(.95)" d="M21 16.5v3a1.8 1.8 0 0 1-2 1.8A17.8 17.8 0 0 1 2.7 5 1.8 1.8 0 0 1 4.5 3h3a1.8 1.8 0 0 1 1.8 1.5c.1.9.4 1.8.7 2.6a1.8 1.8 0 0 1-.4 1.9L8.4 10.2a14.4 14.4 0 0 0 5.4 5.4l1.2-1.2a1.8 1.8 0 0 1 1.9-.4c.8.3 1.7.6 2.6.7a1.8 1.8 0 0 1 1.5 1.8z" fill="#8e8e93"/><path d="m17.4 1.2 4.4 4.4m0-4.4-4.4 4.4" stroke="#8e8e93" stroke-width="1.7" stroke-linecap="round"/></svg>',
   };
   const NAV = [
     '<svg viewBox="0 0 24 24"><circle cx="12" cy="7.3" r="4.6"/><path d="M3.2 21.5c0-5 3.9-8 8.8-8s8.8 3 8.8 8z"/></svg>',
@@ -381,7 +382,7 @@
     for (const m of data[k]) {
       if (m.type === 'date') { out.push(flat.length); flat.push({ date: m.date }); prevKey = ''; continue; }
       const parts = [];
-      if (m.type === 'call') parts.push({ call: 1 });
+      if (m.type === 'call') parts.push({ call: 'voice' }, { call: 'missed' });
       else {
         if (m.mediaKey) parts.push({ media: m });
         (m.lines || []).forEach(t => parts.push({ text: t }));
@@ -399,7 +400,7 @@
   }
   function bubble(f, endGroup, n) {
     const { m } = f, mine = m.isMe, named = f.start && !mine && n > 0;
-    const body = f.call ? `<div class="b call">${I.call}Missed Voice Call</div>`
+    const body = f.call ? `<div class="b call">${f.call === 'voice' ? I.call + '보이스톡' : I.callx + '부재중'}</div>`
       : f.media ? (MEDIA[m.mediaKey] ? `<img class="b pic" src="assets/media/${MEDIA[m.mediaKey][0]}.webp" width="${MEDIA[m.mediaKey][1]}" height="${MEDIA[m.mediaKey][2]}" loading="lazy" alt="">` : `<div class="b ph">${I.pic}${esc(m.mediaCaption || '')}</div>`)
       : `<div class="b">${mention(esc(f.text))}</div>`;
     const meta = (f.lastOfMsg && m.unread ? `<i>${m.unread}</i>` : '') + (endGroup ? `<span>${t12(m.time)}</span>` : '');
