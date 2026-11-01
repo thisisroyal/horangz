@@ -1066,6 +1066,7 @@ window.chatData = {
     { sender: "성호오빠", isMe: false, time: "오전 12:53", lines: ["👍", "열두시에 바로 내려와"] },
     { sender: "은여주", isMe: true, time: "오전 12:53", lines: ["넵넵", "ㅋㅋㅋ", "낼바", "빠이"] },
     { sender: "성호오빠", isMe: false, time: "오전 12:53", unread: 1, lines: ["응 ㅋㅋㅋㅋㅋ"] },
+    { type: "date", date: "2025년 2월 13일 목요일" },
     { sender: "은여주", isMe: true, time: "오후 3:07", lines: ["도착쓰"] },
     { sender: "성호오빠", isMe: false, time: "오후 3:07", lines: ["공원이야?"] },
     { sender: "은여주", isMe: true, time: "오후 3:07", lines: ["아닝 나", "그 맞은편에", "스벅", "나 초나숲 마실래"] },
