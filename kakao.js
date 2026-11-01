@@ -237,7 +237,22 @@
   nt.className = 'nt';
   nt.innerHTML = `<div class="nt-av"><img alt=""><img class="nt-app" src="assets/icons/kakaotalk.webp" alt=""></div><div class="nt-tx"><b></b><b class="rm"></b><p></p></div><time>now</time>`;
   let ntTimer, ntRoom;
+  // notification sound: decoded once, played on every banner; browsers allow audio only after the visitor's first tap/key
+  const ding = (() => {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return () => {};
+    const ctx = new AC();
+    let buf = null;
+    fetch('assets/sound/kakao.mp3').then(r => r.arrayBuffer()).then(a => ctx.decodeAudioData(a)).then(b => { buf = b; }).catch(() => {});
+    const unlock = () => ctx.resume().then(() => ['pointerup', 'touchend', 'keydown'].forEach(t => removeEventListener(t, unlock, true)));
+    ['pointerup', 'touchend', 'keydown'].forEach(t => addEventListener(t, unlock, true));
+    return () => {
+      if (!buf || ctx.state !== 'running') return;
+      const s = ctx.createBufferSource(); s.buffer = buf; s.connect(ctx.destination); s.start();
+    };
+  })();
   function notify(k, m) {
+    ding();                                        // only reached when 여주 is not inside that room
     ntRoom = k;
     const who = PEOPLE[m.sender]?.[0] || m.sender, text = m.mediaKey ? 'Photo' : m.lines[0];
     nt.querySelector('.nt-av img').src = P(m.sender);
