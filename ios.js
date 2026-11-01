@@ -67,9 +67,9 @@
     { n: '+1 (949) 558-2436', t: 'Yesterday', p: 'Going', us: 1 },
     { n: '78727', t: 'Wednesday', p: 'Wildflower Cases: more solid colorways, coming right up! shop the new drop now', us: 1 },
     { n: '729725', t: 'Sunday', p: 'PayPal: 076786 is your security code. Don\'t share it.', us: 1, dot: 1 },
+    { n: '상히기니', t: '2/28/25', p: '용궁가기전에 얼굴 좀 보자', who: '상히기니', open: 'gini' },
     { n: '24273', t: '2/28/25', p: 'Chase | Zelle(R): WOONHAK KIM sent you $7.00 & it\'s ready now. Reply STOP to cancel.', us: 1, dot: 1 },
     { n: '비니비니언니', t: '2/18/25', p: '네!!!!!', who: '비니비니언니', open: 'bini' },
-    { n: '상히기니', t: '2/17/25', p: '잠만...', who: '상히기니', open: 'gini' },
   ];
   const thAv = t => t.group ? `<span class="av grp"><img src="${pic('비니비니언니')}" alt=""><img class="bd" src="${pic('제로언니')}" alt=""></span>`
     : t.who ? `<img class="av" src="${pic(t.who)}" alt="">` : `<span class="av">${anon}</span>`;
@@ -88,17 +88,25 @@
       ['out', '네!!!!!'], ['read', '2/18/25'],
     ]],
     gini: ['상히기니', [
-      ['stamp', 'Mon, Feb 17', '5:03 PM'],
+      // only the latest exchange shows its time and the read receipt
+      ['stamp', 'Mon, Feb 17'],
       ['in', '어이'], ['in', '미스 시들시들'],
       ['out', 'why'],
       ['in', '미스터 해롱해롱과'], ['in', '밥한끼?'],
       ['out', '?'], ['out', '그게 누구지??'],
       ['in', '나.'],
-      ['out', 'ㅋㅋㅋㅋㅋ'], ['out', '잠만...'], ['read', '2/17/25'],
+      ['out', 'ㅋㅋㅋㅋㅋ'], ['out', '잠만...'],
+      ['stamp', 'Fri, Feb 21'],
+      ['in', '여주'], ['in', '도착하면 카톡'],
+      ['out', '얍'],
+      ['stamp', 'Fri, Feb 28', '5:12 PM'],
+      ['in', '아가씨'], ['in', '그러다가'], ['in', '곧 용왕님 만나러 가겠어'],
+      ['out', '에?'], ['read', '2/28/25'],
+      ['in', '뒤에'], ['in', 'ㅋㅋㅋㅋㅋㅋ'], ['in', '와 봐'], ['in', '용궁가기전에 얼굴 좀 보자'],
     ]],
   };
   const chatHtml = CHAT => CHAT.map(([k, a, b], i) => {
-    if (k === 'stamp') return `<p class="im-st"><b>${a}</b> at ${b}</p>`;
+    if (k === 'stamp') return `<p class="im-st"><b>${a}</b>${b ? ` at ${b}` : ''}</p>`;
     if (k === 'read') return `<p class="im-rd"><b>읽음:</b> ${a}</p>`;
     const nx = CHAT[i + 1], tail = !nx || nx[0] !== k;
     return `<div class="im ${k}${tail ? ' tail' : ''}"><span>${a}</span></div>`;
