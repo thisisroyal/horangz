@@ -29,7 +29,7 @@
   ];
   const PLUS = [['photo', 'Photo'], ['camera', 'Camera'], ['call', 'Call'], ['gift', 'Gift Shop'], ['money', 'Money'], ['location', 'Location'],
     ['friendsloc', 'Friends<br>Location'], ['music', 'Music'], ['minigames', 'Mini Games'], ['file', 'File'], ['contacts', 'Contacts'], ['voicememo', 'Voice Memo']];
-  const ROOMS = ['호랑이들', '11층', 'My girls', '김동', '한동', '성호오빠', '제로언니', 'Myeong', '상히기니', '운학이'];
+  const ROOMS = ['호랑이들', '11층', 'My girls', '김동', '한동', '성호오빠', '제로언니', 'Myeong', '상히기니', '운학이', '비니비니언니'];
   const MEDIA = {                                // mediaKey -> [file in assets/media, width, height]
     MEDIA_1: ['drama', 900, 437], MEDIA_2: ['woonhak-selfie', 675, 900], MEDIA_3: ['handong-elevator', 675, 900],
     MEDIA_4: ['gini-blanket', 900, 676], MEDIA_NEMO: ['nemo', 416, 900], MEDIA_DORY: ['dory', 416, 900],
