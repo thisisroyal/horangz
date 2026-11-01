@@ -956,9 +956,9 @@ window.chatData = {
     { sender: "한동", isMe: false, time: "오후 3:39", lines: ["언제필요한데"] },
     { sender: "은여주", isMe: true, time: "오후 3:39", lines: ["금요일에?"] },
     { sender: "한동", isMe: false, time: "오후 3:40", lines: ["ㅇㅋ", "내일 다시 연락해"] },
-    { type: "date", date: "2025년 3월 6일 목요일" },
+    { type: "date", date: "2025년 3월 5일 수요일" },
     { sender: "한동", isMe: false, time: "오후 7:54", unread: 1, lines: ["글루건 언제 가져갈건데"] },
-    { type: "date", date: "2025년 3월 7일 금요일" },
+    { type: "date", date: "2025년 3월 6일 목요일" },
     { sender: "한동", isMe: false, time: "오후 9:11", unread: 1, lines: ["몰라"] },
     { sender: "한동", isMe: false, time: "오후 9:11", unread: 1, lines: ["나 들고 너희집 간다 그냥"] },
     { sender: "한동", isMe: false, time: "오후 9:11", unread: 1, lines: ["알아서 게스트 이름대고 올라가겠음"] }
