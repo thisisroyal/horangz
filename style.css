@@ -588,7 +588,7 @@ img{-webkit-user-drag:none;-webkit-touch-callout:none}
 .im-back svg{width:22px;height:22px}
 .im-back i{font-style:normal;height:22px;padding:0 7px;border-radius:11px;background:#111;color:#fff;font-size:13.5px;font-weight:600;line-height:22px}
 .im-who{position:absolute;left:50%;top:61px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
-.im-who img{width:59px;height:59px;border-radius:50%;object-fit:cover}
+.im-who img{position:relative;z-index:1;width:59px;height:59px;border-radius:50%;object-fit:cover}   /* photo in front of the name pill */
 .im-who span{display:flex;align-items:center;gap:3px;margin-top:-8px;height:32px;padding:0 10px 0 14px;border-radius:16px;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.08),inset 0 0 0 .5px rgba(0,0,0,.12);font-size:17px;font-weight:700;color:#000}
 .im-who span svg{width:12px;height:12px;color:#8e8e93;stroke-width:3}
 .im{display:flex;margin-top:4px}
