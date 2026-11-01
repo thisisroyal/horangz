@@ -124,7 +124,7 @@
         if (st >= UNSEEN && st < LIVE_FROM) unread += n;   // older unread is already inside the 530
         if (st < LIVE_FROM && (st >= UNSEEN || k === GROUP && st > KEEP1)) roomUnread[k] = (roomUnread[k] || 0) + n;
         if (st >= D7) { if (k === GROUP && st < LIVE_FROM) (st < UNSEEN ? speakPre : speak)(m); continue; }
-        if (k === GROUP && st > KEEP1 || m.deleted) m.unread = 1; else delete m.unread;   // a message deleted before 여주 saw it keeps its 1
+        if (k === GROUP && st > KEEP1) m.unread = 1; else delete m.unread;
       }
     }
   }
