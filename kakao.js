@@ -98,6 +98,7 @@
      호랑이들 on 3/7: counting restarts at the first live message (상히기니's 10:38 photo), which shows 8.
      From there each message shows the previous count, minus one when its sender is new since that photo
      (then every earlier count above 1 also drops by one). Counts stay within 1-8 and never rise.
+     A new participant counts as soon as their typing starts (~2.5 s before the message), not on arrival.
      The 10:35-10:37 messages before it follow the same rule among themselves, and also drop when
      someone who was not part of them speaks later. */
   const GROUP = '호랑이들', D7 = Date.UTC(2025, 2, 7) / 6e4, KEEP1 = Date.UTC(2025, 2, 5) / 6e4 + 15 * 60 + 34;
@@ -109,6 +110,8 @@
   }
   const speakPre = m => count(pre, m, true);
   const speak = m => { count(pre, m, false); count(base, m, true); };
+  // someone starts typing: if they are new since the photo, they have read it all (true when counts changed)
+  const readBy = sender => base.list.length && !base.spoke.has(sender) && (count(pre, { sender }, false), count(base, { sender }, false), true);
   function readState() {
     for (const [k, msgs] of Object.entries(data)) {
       let date = '';
@@ -171,7 +174,10 @@
       badges(); refreshList();
     }
     // typing indicator: the next sender in the open room is "typing" for ~2.5s before the message lands
-    const nx = queue[0], real = nx && inRoom(nx.k) && nearBottom() && nx.at - simNow() < 2600 * SPEED ? nx.obj.sender : null;
+    const TYPE = 2600 * SPEED, nx = queue[0], real = nx && inRoom(nx.k) && nearBottom() && nx.at - simNow() < TYPE ? nx.obj.sender : null;
+    // a new 호랑이들 participant has read everything once they start typing: counts drop now, not on arrival
+    const ng = queue.find(q => q.k === GROUP);
+    if (ng && ng.at - simNow() < TYPE && readBy(ng.obj.sender)) { if (inRoom(GROUP)) syncRoom(true); }
     // 성호 keeps starting and stopping typing in his room from 10:38 until 10:45
     const who = real || (tease && inRoom(FIRST) && simNow() < START + 7 * 6e4 ? FIRST : null);
     setTyping(who);
