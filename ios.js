@@ -66,7 +66,6 @@
     { n: '85938', t: '8:20 AM', p: 'You may reply STOP to opt-out of text messages at any time.', us: 1, dot: 1 },
     { n: '+1 (949) 558-2436', t: 'Yesterday', p: 'Going', us: 1 },
     { n: '78727', t: 'Wednesday', p: 'Wildflower Cases: more solid colorways, coming right up! shop the new drop now', us: 1 },
-    { n: '+1 (833) 819-2217', t: 'Tuesday', p: '[Minitable]Haidilao - Chicago: Yeoju Eun for 5 on 2025/03/08 18:30. Your table will be held for 15 minutes.', us: 1, dot: 1 },
     { n: '729725', t: 'Sunday', p: 'PayPal: 076786 is your security code. Don\'t share it.', us: 1, dot: 1 },
     { n: '24273', t: 'Sunday', p: 'Chase | Zelle(R): DONGMIN HAN sent you $7.00 & it\'s ready now. Reply STOP to cancel.', us: 1, dot: 1 },
     { n: '비니비니언니', t: '2/18/25', p: '네!!!!!', who: '비니비니언니', open: 'bini' },
