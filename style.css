@@ -591,7 +591,7 @@ img{-webkit-user-drag:none;-webkit-touch-callout:none}
 .im-who span svg{width:11px;height:11px;color:#9a9a9e;stroke-width:3}
 .im{display:flex;margin-top:4px}
 .im.out{justify-content:flex-end}
-.im span{position:relative;max-width:264px;padding:8px 14px;border-radius:19px;font-size:17px;line-height:1.3;word-break:break-word}
+.im span{position:relative;max-width:300px;padding:8px 14px;border-radius:19px;font-size:17px;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}
 .im-who b{font-weight:inherit}
 .im.in span{background:#e9e9eb;color:#000}
 .im.out span{max-width:300px;padding:11px 18px;border-radius:24px;background:linear-gradient(#61aef6,#59a6f5);color:#fff}
