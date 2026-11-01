@@ -489,10 +489,9 @@ img{-webkit-user-drag:none}
 @keyframes msgIn{from{opacity:0;transform:translateY(14px)}}
 .kt-msgs>.ty-row{transition:opacity .28s ease,height .32s cubic-bezier(.4,0,.2,1),margin .32s cubic-bezier(.4,0,.2,1),padding .32s cubic-bezier(.4,0,.2,1)}
 .kt-msgs>.ty-row.out{opacity:0}
-/* the sender's bubble takes the dots' place: avatar and name stay, the bubble fades in where the dots fade out */
-.kt-msgs>.swap .b{animation:bIn .32s cubic-bezier(.2,.8,.3,1) both;transform-origin:0 50%}
-.kt-msgs>.swap .meta{animation:bIn .32s ease both}
-@keyframes bIn{from{opacity:0;transform:scale(.94)}}
+/* the sender's dots (with avatar and name) sink and fade, then their bubble rises into the same place */
+.kt-msgs>.ty-row.drop{transition:opacity .22s ease-in,transform .28s cubic-bezier(.5,0,.9,.6);opacity:0;transform:translateY(16px)}
+.kt-msgs>.pop.late{animation-delay:.17s}
 /* lists stop at a half-visible, fading last row */
 .kt-fade{position:relative;height:22px;margin-top:-22px;background:linear-gradient(rgba(255,255,255,0),#fff 95%);pointer-events:none}
 .kt-list .kt-fade{height:26px;margin-top:-26px}

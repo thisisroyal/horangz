@@ -174,7 +174,7 @@
       msgs.push(obj);
       if (inRoom(k)) {
         const seen = atBottom(), ty = liveTy(), swap = ty?.dataset.who === obj.sender;
-        if (swap) retire(ty, true);                // the sender's dots give way to their bubble in the same spot
+        if (swap) retire(ty, true);                // the sender's dots sink away, then their bubble rises in
         syncRoom(true, swap);                      // only the new bubble is added; other dots (if any) stay below it
         if (!seen) newMsg(obj);
       } else { roomUnread[k] = (roomUnread[k] || 0) + 1; unread++; notify(k, obj); }
@@ -187,33 +187,34 @@
     if (ng && ng.at - simNow() < TYPE && readBy(ng.obj.sender)) { if (inRoom(GROUP)) syncRoom(true); }
     // 성호 keeps starting and stopping typing in his room until 10:45
     const who = real || (tease && inRoom(FIRST) && simNow() < START + 4 * 6e4 ? FIRST : null);
-    setTyping(who, real ? nx.obj.time : nowTime());
+    setTyping(who);
   }
   // typing dots live in one element that is reused, moved and faded; never re-rendered
-  const nowTime = () => { const p = chiParts(simNow()), h = +p.hour; return `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${p.minute}`; };
-  // the dots take the shape of the bubble they stand for: right under the sender's last bubble of the same minute
-  // they continue that group (no avatar/name), so the bubble can replace them without anything jumping
-  function setTyping(who, time) {
+  function setTyping(who) {
     if (!roomEl) return;
-    const box = msgBox(), last = data[roomKey]?.at(-1), cont = !!who && last?.sender === who && last.time === time;
+    const box = msgBox();
     let row = liveTy();
     typing = who;
-    if (row && (row.dataset.who !== who || row.classList.contains('g') === cont)) { retire(row); row = null; }
+    if (row && row.dataset.who !== who) { retire(row); row = null; }
     if (!who) { if (row) retire(row); return; }
     if (row) { if (row !== box.lastElementChild) box.append(row); return; }   // keep the dots under the newest bubble
     const end = atBottom();
-    box.insertAdjacentHTML('beforeend', cont
-      ? `<div class="m ty-row pop" data-who="${esc(who)}"><div class="b ty"><i></i><i></i><i></i></div></div>`
-      : `<div class="m g t n ty-row pop" data-who="${esc(who)}"><img class="av" src="${P(who)}" alt=""><span class="who">${esc(PEOPLE[who]?.[0] || who)}</span><div class="b ty"><i></i><i></i><i></i></div></div>`);
+    box.insertAdjacentHTML('beforeend', `<div class="m g t n ty-row pop" data-who="${esc(who)}"><img class="av" src="${P(who)}" alt=""><span class="who">${esc(PEOPLE[who]?.[0] || who)}</span><div class="b ty"><i></i><i></i><i></i></div></div>`);
     if (end) box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
   }
   const liveTy = () => roomEl && msgBox().querySelector('.ty-row:not(.out)');
-  // dots leave smoothly: lifted out of the flow when a bubble replaces them, otherwise folded shut
-  function retire(row, lift) {
-    row.classList.add('out');
-    if (lift) row.style.cssText = `position:absolute;left:0;right:0;margin:0;top:${row.offsetTop}px`;
-    else { row.style.height = row.offsetHeight + 'px'; row.style.overflow = 'hidden'; void row.offsetHeight; row.style.cssText += ';height:0;margin-top:0;padding-top:0'; }
-    setTimeout(() => row.remove(), 340);
+  // dots leave smoothly. When their own bubble arrives they are lifted out of the flow where they stand and sink
+  // away (avatar, name and dots together) while the bubble rises into that place; otherwise they fold shut.
+  function retire(row, drop) {
+    if (drop) {
+      row.classList.remove('pop');                 // its entry animation would otherwise pin the transform
+      row.style.cssText = `position:absolute;left:0;right:0;margin:0;top:${row.offsetTop}px`;
+      void row.offsetHeight; row.classList.add('out', 'drop');
+    } else {
+      row.classList.add('out');
+      row.style.height = row.offsetHeight + 'px'; row.style.overflow = 'hidden'; void row.offsetHeight; row.style.cssText += ';height:0;margin-top:0;padding-top:0';
+    }
+    setTimeout(() => row.remove(), 400);
   }
   let typing = null, tease = false;
   (function teaseLoop() {                         // irregular on/off rhythm: typing 1.5-6s, quiet 3-14s
@@ -254,11 +255,11 @@
     let buf = null, waiting = -1e9;               // when a ding was asked for before the sound finished decoding
     const play = () => { const s = ctx.createBufferSource(); s.buffer = buf; s.connect(ctx.destination); s.start(); };
     fetch('assets/sound/kakao.mp3').then(r => r.arrayBuffer()).then(a => ctx.decodeAudioData(a))
-      .then(b => { buf = b; if (performance.now() - waiting < 600 && ctx.state === 'running') play(); }).catch(() => {});
+      .then(b => { buf = b; if (performance.now() - waiting < 600 && ctx.state === 'running' && !document.hidden) play(); }).catch(() => {});
     const unlock = () => ctx.resume().then(() => ['pointerup', 'touchend', 'keydown'].forEach(t => removeEventListener(t, unlock, true)));
     ['pointerup', 'touchend', 'keydown'].forEach(t => addEventListener(t, unlock, true));
     ctx.resume().catch(() => {});
-    return () => { if (ctx.state !== 'running') return; if (buf) play(); else waiting = performance.now(); };
+    return () => { if (document.hidden || ctx.state !== 'running') return; if (buf) play(); else waiting = performance.now(); };   // silent in the background
   })();
   const LEAD = 500;                                // ms of real time the sound comes before the banner
   function ringAhead() {
@@ -489,7 +490,7 @@
       const t = document.createElement('template'); t.innerHTML = h;
       const n = t.content.firstElementChild;
       if (kids[i]) kids[i].replaceWith(n);          // e.g. the time label moving to the newest bubble
-      else { n.classList.add(swap ? 'swap' : 'pop'); swap = false; box.insertBefore(n, ty); }
+      else { n.classList.add('pop'); if (swap) n.classList.add('late'); swap = false; box.insertBefore(n, ty); }
     });
     shown = next;
     if (end) box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
