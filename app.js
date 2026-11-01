@@ -142,7 +142,7 @@ fv.addEventListener('click', e => {
   let d = null;
   addEventListener('pointerdown', e => {
     if (e.pointerType !== 'mouse' || e.button || e.target.closest('input,.nt')) return;
-    const sc = e.target.closest('.sc,.kt-list,.kt-msgs,.nsc,.ym-sc,.gm-sc,.go-sc');
+    const sc = e.target.closest('.sc,.kt-list,.kt-msgs,.nsc,.ym-sc,.gm-sc,.go-sc,.ios-sc');
     if (sc) d = { sc, y: e.clientY, top: sc.scrollTop, moved: false };
   });
   addEventListener('pointermove', e => {
