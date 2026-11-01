@@ -124,9 +124,9 @@
         const [y, mo, d] = ymd(date), st = Date.UTC(y, mo - 1, d) / 6e4 + mins(m.time);
         const n = m.isMe ? 0 : (m.mediaKey ? 1 : 0) + (m.lines?.length || 0) + (m.extraLines?.length || 0);
         if (st >= UNSEEN && st < LIVE_FROM) unread += n;   // older unread is already inside the 530
-        if (st < LIVE_FROM && (st >= UNSEEN || k === GROUP && st > KEEP1)) roomUnread[k] = (roomUnread[k] || 0) + n;
+        if (st < LIVE_FROM && (st >= UNSEEN || st > KEEP1)) roomUnread[k] = (roomUnread[k] || 0) + n;   // 여주 has read nothing since 3/5 3:34 PM
         if (st >= D7) { if (k === GROUP && st < LIVE_FROM) (st < UNSEEN ? speakPre : speak)(m); continue; }
-        if (k === GROUP && st > KEEP1) m.unread = 1; else delete m.unread;
+        if (st > KEEP1 && (k === GROUP || !m.isMe)) m.unread = 1; else delete m.unread;
       }
     }
   }
