@@ -93,27 +93,30 @@
   load();
 
   /* ----- read counts (the yellow numbers) -----
-     Everything before 3/7 has been read by everyone, except 호랑이들 after 3/5 3:34 PM, where 여주 never opened it (1 stays).
-     3/7 history keeps its numbers; live 호랑이들 messages start at a random 1-8 and drop as other members speak. */
+     Before 3/7 everything is read, except 호랑이들 after 3/5 3:34 PM where 여주 never looked (a 1 stays).
+     호랑이들 on 3/7 (history and live): the first message shows 8; each time someone speaks for the first time
+     that day, every earlier count above 1 drops by one and their message shows the previous count minus one;
+     a returning speaker changes nothing and repeats the previous count. Counts stay within 1-8 and never rise. */
   const GROUP = '호랑이들', D7 = Date.UTC(2025, 2, 7) / 6e4, KEEP1 = Date.UTC(2025, 2, 5) / 6e4 + 15 * 60 + 34;
+  const spoke = new Set(), today = [];
+  function speak(m) {
+    const prev = today.length ? today.at(-1).unread : 9, fresh = !spoke.has(m.sender);
+    if (fresh) { spoke.add(m.sender); today.forEach(t => t.unread > 1 && t.unread--); }
+    m.unread = Math.min(8, Math.max(1, prev - (fresh ? 1 : 0)));
+    today.push(m);
+  }
   function readState() {
     for (const [k, msgs] of Object.entries(data)) {
       let date = '';
       for (const m of msgs) {
         if (m.type === 'date') { date = m.date; continue; }
         const [y, mo, d] = ymd(date), st = Date.UTC(y, mo - 1, d) / 6e4 + mins(m.time);
-        if (st >= D7) continue;
+        if (st >= D7) { if (k === GROUP && st < LIVE_FROM) speak(m); continue; }
         if (k === GROUP && st > KEEP1) m.unread = 1; else delete m.unread;
       }
     }
   }
-  // a newer message can never have fewer unread readers than an older one: pick between the latest count and 8
-  const rnd18 = () => { const lo = Math.max(1, ...data[GROUP].map(m => m.unread || 0)); return lo + Math.floor(Math.random() * (9 - lo)); };
-  let cur = 1;                                   // shared by the lines of one multi-line message
-  function readBy(k, who) {                        // `who` just spoke in room k, so they have read everything before
-    if (k !== GROUP) return;
-    for (const m of data[k]) if (m.unread > 1 && m.sender !== who && !(m.readBy ||= []).includes(who)) { m.readBy.push(who); m.unread--; }
-  }
+
 
   /* ----- live messages: pulled out of the data, delivered when the phone clock reaches them ----- */
   let queue = [];
@@ -147,7 +150,7 @@
     while (queue.length && queue[0].at <= simNow()) {
       const { k, obj, date } = queue.shift(), msgs = data[k];
       if (date) msgs.push(date);
-      if (k === GROUP) { readBy(k, obj.sender); if (!obj.part) cur = rnd18(); obj.unread = cur; }
+      if (k === GROUP) speak(obj);
       msgs.push(obj);
       if (inRoom(k)) {
         const seen = atBottom();
@@ -436,8 +439,10 @@
     const p = chiParts(simNow()), msgs = data[roomKey], h = +p.hour;
     const date = `${p.year}년 ${p.month}월 ${p.day}일 ${WD[new Date(Date.UTC(p.year, p.month - 1, p.day)).getUTCDay()]}요일`;
     if (![...msgs].reverse().find(m => m.type === 'date')?.date.startsWith(date.split(' ').slice(0, 3).join(' '))) msgs.push({ type: 'date', date });
-    const n = PEOPLE[roomKey] ? 1 : roomKey === GROUP ? rnd18() : members(roomKey).length;
-    msgs.push({ sender: ME, isMe: true, time: `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${p.minute}`, unread: n, lines: [text] });
+    const n = PEOPLE[roomKey] ? 1 : members(roomKey).length;
+    const mine = { sender: ME, isMe: true, time: `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${p.minute}`, unread: n, lines: [text] };
+    if (roomKey === GROUP) speak(mine);
+    msgs.push(mine);
     syncRoom(true);
   }
 
