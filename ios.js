@@ -1,8 +1,7 @@
 'use strict';
 /* ===== Phone (Calls) and Messages (iMessage) ===== */
 (() => {
-  const PIC = { '한동': 'handong', '엄마': 'mom', '김동': 'kimdong', '운학이': 'woonhak', '상히기니': 'gini', '제로 언니': 'zero' };
-  const pic = n => PIC[n] ? `assets/profile/${PIC[n]}.jpg?2` : 'assets/profile/ios-anon.svg';   // no photo saved: iOS default
+  const pic = () => 'assets/profile/ios-anon.svg';   // no contact photos saved: iOS default for everyone
   const sv = (d, vb = '0 0 24 24') => `<svg viewBox="${vb}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const I = {
     phone: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20.6 16.1v3a1.9 1.9 0 0 1-2.1 1.9A18.4 18.4 0 0 1 3 5.5 1.9 1.9 0 0 1 4.9 3.4h3a1.9 1.9 0 0 1 1.9 1.6c.1.9.4 1.8.7 2.6a1.9 1.9 0 0 1-.4 2L8.8 10.9a15 15 0 0 0 4.3 4.3l1.3-1.3a1.9 1.9 0 0 1 2-.4c.8.3 1.7.6 2.6.7a1.9 1.9 0 0 1 1.6 1.9z"/></svg>',
@@ -40,14 +39,15 @@
   const day = d => { const [m, dd, y] = d.split('/'); return y * 1e4 + m * 100 + +dd; };
   const calls = [
     ...[call('한동', 'missed', 'phone'), call('한동', 'in', 'phone'), call('한동', 'out', 'phone')].map(c => ({ ...c, date: '3/6/25' })),
-    ...shuffle([call('엄마'), call('김동'), call('비니비니 언니'), call('비니비니 언니'), call('운학이'), call('운학이'), call('상히기니')]).map((c, i) => ({ ...c, date: DATES[i] })),
-    { ...call('비니비니 언니', 'out', 'mobile'), date: '3/5/25' },      // 16 s
-    { ...call('성호 오빠', 'in', 'mobile'), date: '2/20/25' },
+    ...shuffle([call('엄마'), call('김동'), call('비니비니언니'), call('비니비니언니'), call('운학이'), call('운학이'), call('상히기니')]).map((c, i) => ({ ...c, date: DATES[i] })),
+    { ...call('비니비니언니', 'out', 'mobile'), date: '3/5/25' },      // 16 s
+    { ...call('성호오빠', 'in', 'mobile'), date: '2/20/25' },
     { ...call('김동', 'in'), date: '2/12/25' },
-    { ...call('성호 오빠', 'in', 'mobile'), date: '2/11/25' },
+    { ...call('성호오빠', 'in', 'mobile'), date: '2/11/25' },
     { ...call('상히기니', 'out'), date: '2/11/25' },
-    { ...call('비니비니 언니', 'in', 'mobile'), date: '2/18/25' },      // 6:25 PM
-    { ...call('비니비니 언니', 'missed', 'mobile'), date: '2/17/25' },  // 4:06 PM, then "콜백해줘"
+    { ...call('비니비니언니', 'in', 'mobile'), date: '2/18/25' },      // 6:25 PM
+    { ...call('비니비니언니', 'missed', 'mobile'), date: '2/17/25' },  // 4:06 PM, then "콜백해줘"
+    { ...call('제로언니', 'out'), date: `${(z => `${z.getUTCMonth() + 1}/${z.getUTCDate()}`)(new Date(Date.UTC(2025, 1, 17 + Math.random() * 18 | 0)))}/25` },  // random day 2/17-3/6
   ].sort((a, b) => day(b.date) - day(a.date));
   const callRow = c => `<div class="ios-row cl">
       <img class="av" src="${pic(c.who)}" alt="">
@@ -62,40 +62,43 @@
   /* ---------- Messages ---------- */
   const THREADS = [
     { n: '+1 (415) 997-2702', t: '11:30 AM', p: '사랑하는 고객님, 주문하신 상품 배송이 완료되었습니다. 주문 확인 및 배송 만족도 평가는 여기에서 해주세요.', us: 1 },
-    { n: '비니비니 언니 binny 및 제로 언니 young', t: '9:49 AM', p: '비니비니 언니 binny님이 ‘귀엽다’에 하트 표시함', group: 1, dot: 1 },
+    { n: '비니비니언니 및 제로언니 young', t: '9:49 AM', p: '비니비니언니님이 ‘귀엽다’에 하트 표시함', group: 1, dot: 1 },
     { n: '85938', t: '8:20 AM', p: 'You may reply STOP to opt-out of text messages at any time.', us: 1, dot: 1 },
     { n: '+1 (949) 558-2436', t: 'Yesterday', p: 'Going', us: 1 },
     { n: '78727', t: 'Wednesday', p: 'Wildflower Cases: more solid colorways, coming right up! shop the new drop now', us: 1 },
-    { n: '비니비니 언니 binny', t: 'Tuesday', p: '가기 전 부터 오금저려', who: '비니비니 언니', dot: 1, open: 1 },
     { n: '+1 (833) 819-2217', t: 'Tuesday', p: '[Minitable]Haidilao - Chicago: Yeoju Eun for 5 on 2025/03/08 18:30. Your table will be held for 15 minutes.', us: 1, dot: 1 },
     { n: '729725', t: 'Sunday', p: 'PayPal: 076786 is your security code. Don\'t share it.', us: 1, dot: 1 },
     { n: '24273', t: 'Sunday', p: 'Chase | Zelle(R): DONGMIN HAN sent you $7.00 & it\'s ready now. Reply STOP to cancel.', us: 1, dot: 1 },
+    { n: '비니비니언니', t: '2/18/25', p: '네!!!!!', who: '비니비니언니', open: 'bini' },
+    { n: '상히기니', t: '2/17/25', p: '잠만...', who: '상히기니', open: 'gini' },
   ];
-  const thAv = t => t.group ? `<span class="av grp"><img src="${pic('비니비니 언니')}" alt=""><img class="bd" src="${pic('제로 언니')}" alt=""></span>`
+  const thAv = t => t.group ? `<span class="av grp"><img src="${pic('비니비니언니')}" alt=""><img class="bd" src="${pic('제로언니')}" alt=""></span>`
     : t.who ? `<img class="av" src="${pic(t.who)}" alt="">` : `<span class="av">${anon}</span>`;
-  const thRow = t => `<div class="ios-row th${t.open ? ' go' : ''}">${t.dot ? '<i class="dot"></i>' : ''}${thAv(t)}
+  const thRow = t => `<div class="ios-row th${t.open ? ' go' : ''}"${t.open ? ` data-chat="${t.open}"` : ''}>${t.dot ? '<i class="dot"></i>' : ''}${thAv(t)}
       <div class="tx"><div class="nm"><b>${t.n}</b><time>${t.t}</time>${I.chev}</div><p>${t.us ? tag : ''}${t.p}</p></div></div>`;
 
-  // conversation with 비니비니 언니 (iMessage)
-  const CHAT = [
-    ['stamp', 'Mon, Feb 17', '4:06 PM'],
-    ['in', '여주'], ['in', '시간되면 콜백해줘!'],
-    ['stamp', 'Tue, Feb 18', '5:32 PM'],
-    ['in', '여주야 바빠?'], ['in', '밥 먹자!!'],
-    ['out', 'ㅋㅋㅋㅋ ㅠㅠ'], ['out', '잘먹었습니다~~~'],
-    ['in', '그래 밥 챙기면서 해'],
-    ['out', '네!!!!!'], ['read', '2/18/25'],
-    ['in', '내가 끝나면 13층갈게'], ['in', '근게 유정이는 진짜 괜찮아해서'], ['in', '나도 배고파'],
-    ['out', '아니근데 담에 셋이서가자 내가 지금 힘이없음'], ['out', 'ㅋㅋ..'],
-    ['in', 'ㅇㅋㅇㅋ'],
-    ['stamp', 'Mon, Mar 3', '11:49 AM'],
-    ['out', '학교 몇시도착?'], ['out', '내가 밥먹으러 나가면서 노트북을 챙겨나가야할지말지 정해야함'],
-    ['in', '12'], ['in', '어디임'], ['in', '가져와'],
-    ['out', '맥린 12'], ['read', '3/3/25'],
-    ['stamp', 'Tue, Mar 4', '8:02 PM'],
-    ['in', '가기 전 부터 오금저려'],
-  ];
-  const chatHtml = () => CHAT.map(([k, a, b], i) => {
+  // iMessage conversations that open
+  const CHATS = {
+    bini: ['비니비니언니', [
+      ['stamp', 'Mon, Feb 17', '4:06 PM'],
+      ['in', '여주'], ['in', '시간되면 콜백해줘!'],
+      ['stamp', 'Tue, Feb 18', '5:32 PM'],
+      ['in', '여주야 바빠?'], ['in', '밥 먹자!!'],
+      ['out', 'ㅋㅋㅋㅋ ㅠㅠ'], ['out', '잘먹었습니다~~~'],
+      ['in', '그래 밥 챙기면서 해'],
+      ['out', '네!!!!!'], ['read', '2/18/25'],
+    ]],
+    gini: ['상히기니', [
+      ['stamp', 'Mon, Feb 17', '5:03 PM'],
+      ['in', '어이'], ['in', '미스 시들시들'],
+      ['out', 'why'],
+      ['in', '미스터 해롱해롱과'], ['in', '밥한끼?'],
+      ['out', '?'], ['out', '그게 누구지??'],
+      ['in', '나.'],
+      ['out', 'ㅋㅋㅋㅋㅋ'], ['out', '잠만...'], ['read', '2/17/25'],
+    ]],
+  };
+  const chatHtml = CHAT => CHAT.map(([k, a, b], i) => {
     if (k === 'stamp') return `<p class="im-st"><b>${a}</b> at ${b}</p>`;
     if (k === 'read') return `<p class="im-rd"><b>읽음:</b> ${a}</p>`;
     const nx = CHAT[i + 1], tail = !nx || nx[0] !== k;
@@ -110,12 +113,16 @@
       <nav class="ios-msbar"><span class="srch">${I.search}<em>검색</em>${I.mic}</span><span class="circ">${I.compose}</span></nav>
     </div>
     <div class="im-room">
-      <div class="ios-sc im-sc">${chatHtml()}</div>
-      <header class="im-hd"><button class="pill im-back">${I.back}<i>176</i></button><div class="im-who"><img src="${pic('비니비니 언니')}" alt=""><span>비니비니 언니${I.chev}</span></div><span class="circ">${I.video}</span></header>
+      <div class="ios-sc im-sc"></div>
+      <header class="im-hd"><button class="pill im-back">${I.back}<i>176</i></button><div class="im-who"><img src="${pic()}" alt=""><span><b></b>${I.chev}</span></div><span class="circ">${I.video}</span></header>
       <div class="im-in"><span class="circ">${I.plus}</span><span class="im-field">iMessage${I.wave}</span></div>
     </div>`);
   const room = ms.querySelector('.im-room'), imsc = ms.querySelector('.im-sc');
-  ms.querySelector('.th.go').addEventListener('click', () => {
+  ms.querySelector('.ios-list').addEventListener('click', e => {
+    const c = CHATS[e.target.closest('[data-chat]')?.dataset.chat];
+    if (!c) return;
+    room.querySelector('.im-who b').textContent = c[0];
+    imsc.innerHTML = chatHtml(c[1]);
     ms.classList.add('in-room');
     imsc.scrollTop = imsc.scrollHeight;
   });

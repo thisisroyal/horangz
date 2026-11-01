@@ -12,8 +12,8 @@
   const VER = document.currentScript.src.split('?')[1] || '';
   // data sender name -> [display name, profile image]
   const PEOPLE = {
-    '김동': ['김동', 'kimdong'], '비니비니언니': ['비니비니 언니', 'bini'], '상히기니': ['상히기니', 'gini'],
-    '성호오빠': ['성호 오빠', 'sungho'], '운학이': ['운학이', 'woonhak'], '제로언니': ['제로 언니', 'zero'],
+    '김동': ['김동', 'kimdong'], '비니비니언니': ['비니비니언니', 'bini'], '상히기니': ['상히기니', 'gini'],
+    '성호오빠': ['성호오빠', 'sungho'], '운학이': ['운학이', 'woonhak'], '제로언니': ['제로언니', 'zero'],
     '한동': ['한동', 'handong'], 'Myeong': ['Myeong', 'myeong'], '엄마': ['엄마', 'mom'], '아빠': ['아빠', 'dad'],
   };
   // rows in the Chats list that only show (not clickable): family room and official accounts
@@ -66,7 +66,7 @@
     '<svg viewBox="0 0 24 24"><circle cx="4" cy="12" r="2.3"/><circle cx="12" cy="12" r="2.3"/><circle cx="20" cy="12" r="2.3"/></svg>',
   ];
 
-  // "@name" mentions of friends turn blue (longest names first so "성호 오빠" wins over "성호")
+  // "@name" mentions of friends turn blue (longest names first so "성호오빠" wins over "성호")
   let MENTION;
   const mention = t => {
     MENTION ??= new RegExp('@(' + [...new Set([ME, ...Object.keys(PEOPLE), ...Object.values(PEOPLE).map(p => p[0])])]
