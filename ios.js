@@ -70,6 +70,18 @@
     { n: '상히기니', t: '2/28/25', p: '용궁가기전에 얼굴 좀 보자', who: '상히기니', open: 'gini' },
     { n: '24273', t: '2/28/25', p: 'Chase | Zelle(R): WOONHAK KIM sent you $7.00 & it\'s ready now. Reply STOP to cancel.', us: 1, dot: 1 },
     { n: '비니비니언니', t: '2/18/25', p: '네!!!!!', who: '비니비니언니', open: 'bini' },
+    // spam/ads under the real threads: 4 picked at random on each visit, on random earlier days.
+    // Phone numbers use 555-01xx (reserved for fiction in North America, so no real person's number); ads use short codes.
+    ...shuffle([
+      ['+1 (312) 555-0187', 'IL Tollway: You have an unpaid toll balance of $6.99. Reply Y, then reopen this message to get the payment link and avoid a late fee.'],
+      ['+1 (773) 555-0142', 'Your package is on hold because of an incomplete address. Please confirm your details within 24 hours to reschedule delivery.'],
+      ['+1 (872) 555-0119', 'Hi, this is Jessica from the recruiting team. We reviewed your resume and have a remote part-time role ($300-$500/day). Are you interested?'],
+      ['+1 (224) 555-0163', 'Congratulations! You have been selected for a $1,000 grocery reward. Claim it before it expires today.'],
+      ['+1 (630) 555-0128', 'Hey is this Mike? We met at the gym last week, you told me to text you about the apartment.'],
+      ['+1 (708) 555-0191', '[Alert] Unusual sign-in detected on your account. If this was not you, reply STOP and call our support line immediately.'],
+      ['47447', 'Winter Sale: 30% off all knitwear this weekend only. Shop now before your size is gone. Reply STOP to unsubscribe.'],
+      ['88022', 'Your next bowl is on us. Order by Sunday with code GREENS at checkout. Msg&data rates may apply. Reply STOP to opt out.'],
+    ]).slice(0, 4).map(([n, p], i) => ({ n, p, us: 1, dot: Math.random() < .5, t: `2/${16 - i * 3 - (Math.random() * 3 | 0)}/25` })),
   ];
   const thAv = t => t.group ? `<span class="av grp"><img src="${pic('비니비니언니')}" alt=""><img class="bd" src="${pic('제로언니')}" alt=""></span>`
     : t.who ? `<img class="av" src="${pic(t.who)}" alt="">` : `<span class="av">${anon}</span>`;
@@ -115,7 +127,7 @@
   const ms = app('msg-app', `
     <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="ios-av" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9b4d6"/><stop offset="1" stop-color="#7f8ab8"/></linearGradient></defs></svg>
     <div class="ios-list">
-      <div class="ios-sc">${THREADS.map(thRow).join('')}<div class="ios-fade"></div></div>
+      <div class="ios-sc">${THREADS.map(thRow).join('')}<div class="ios-fade th-fade"></div></div>
       <header class="ios-hd"><span class="pill">편집</span><h1>메시지</h1><span class="circ">${I.filter}</span></header>
       <nav class="ios-msbar"><span class="srch">${I.search}<em>검색</em>${I.mic}</span><span class="circ">${I.compose}</span></nav>
     </div>
