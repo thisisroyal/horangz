@@ -338,7 +338,9 @@ img{-webkit-user-drag:none}
 .ym-mini i{font-style:normal;font-size:11px;font-weight:700;color:#212121;background:#aaa;border-radius:2px;width:15px;height:15px;line-height:15px;text-align:center}
 .ym-mini>svg{width:24px;height:24px;margin-left:10px}
 .ym-prog{position:absolute;left:0;right:0;bottom:0;height:1px;background:#8f8f8f}
-.ym-prog::before{content:"";position:absolute;left:0;top:0;bottom:0;width:16px;background:#fff}
+.ym-prog i{position:absolute;inset:0;background:#fff;transform-origin:0 0;transform:scaleX(.0398);will-change:transform}
+.ym-pp{display:grid;place-items:center;width:24px;height:24px;margin-left:10px;padding:0;border:0;background:none;color:inherit;cursor:pointer}
+.ym-pp svg{width:24px;height:24px}
 .ym-nav{position:absolute;left:0;right:0;bottom:0;height:96px;display:flex;justify-content:space-around;padding:8px 8px 0;background:#212121}
 .ym-nav span{width:70px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11.5px;color:#fff}
 .ym-nav svg{width:25px;height:25px}

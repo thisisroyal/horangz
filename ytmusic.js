@@ -22,6 +22,7 @@
     plus: s('<path d="M12 4v16M4 12h16"/>'),
     cast: s('<path d="M3 8V6a1.5 1.5 0 0 1 1.5-1.5h15A1.5 1.5 0 0 1 21 6v12a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="M3 11.5a8 8 0 0 1 8 8M3 15a4.5 4.5 0 0 1 4.5 4.5"/><circle cx="3.6" cy="19" r=".6" fill="currentColor"/>'),
     play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 4.3v15.4a.8.8 0 0 0 1.2.7l12.4-7.7a.8.8 0 0 0 0-1.4L7.7 3.6a.8.8 0 0 0-1.2.7z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="5.5" y="4" width="4.5" height="16" rx="1"/><rect x="14" y="4" width="4.5" height="16" rx="1"/></svg>',
     home: s('<path d="M4 10.5 12 4l8 6.5V20h-5.5v-6h-5v6H4z"/>'),
     sample: s('<path d="M4 5v14l8-7zM12 5v14l8-7z"/>'),
     lib: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 3h13a1 1 0 0 1 1 1v17l-7.5-4.5L4.5 21V4a1 1 0 0 1 1-1z"/></svg>',
@@ -36,8 +37,23 @@
       ${LIST.map(r => `<div class="ym-row"><img src="${A}${r.img}.webp" alt=""${r.round ? ' class="rd"' : ''}><div><b>${r.title}</b><p>${r.sub}</p></div>${I.more}</div>`).join('')}
     </div>
     <button class="ym-new">${I.plus}새로 만들기</button>
-    <div class="ym-mini"><img src="${A}hellyeah.webp" alt=""><div><b>Hell Yeah</b><p><i>E</i>Old Man Saxon</p></div>${I.cast}${I.play}<span class="ym-prog"></span></div>
+    <div class="ym-mini"><img src="${A}hellyeah.webp" alt=""><div><b>Hell Yeah</b><p><i>E</i>Old Man Saxon</p></div>${I.cast}<button class="ym-pp" aria-label="Play">${I.play}</button><span class="ym-prog"><i></i></span></div>
     <nav class="ym-nav"><span>${I.home}홈</span><span>${I.sample}샘플</span><span>${I.search}검색</span><span class="on">${I.lib}보관함</span></nav>`;
   $('#apps').append(el);
+
+  /* mini player: ▶ plays the real song (downloaded only on the first tap), the white bar follows the playback */
+  const DUR = 173.3, AT = DUR * 16 / 402;        // it was paused where the bar's white part ended (16 px)
+  const song = new Audio(), pp = el.querySelector('.ym-pp'), bar = el.querySelector('.ym-prog i');
+  song.preload = 'none';
+  let raf = 0;
+  const draw = () => { bar.style.transform = `scaleX(${song.currentTime / (song.duration || DUR)})`; if (!song.paused) raf = requestAnimationFrame(draw); };
+  const icon = on => { pp.innerHTML = on ? I.pause : I.play; pp.setAttribute('aria-label', on ? 'Pause' : 'Play'); };
+  pp.addEventListener('click', () => {
+    if (!song.src) { song.src = `${A}hellyeah.mp3`; song.addEventListener('loadedmetadata', () => { song.currentTime = AT; }, { once: true }); }
+    if (song.paused) song.play().catch(() => icon(false)); else song.pause();
+  });
+  song.addEventListener('play', () => { icon(true); cancelAnimationFrame(raf); draw(); });
+  song.addEventListener('pause', () => { icon(false); cancelAnimationFrame(raf); draw(); });
+  song.addEventListener('ended', () => { song.currentTime = 0; draw(); });
   APPVIEWS.ytmusic = { el, close: () => setTimeout(() => (el.querySelector('.ym-sc').scrollTop = 0), 400) };
 })();
