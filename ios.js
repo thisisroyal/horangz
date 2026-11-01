@@ -67,7 +67,7 @@
     { n: '+1 (949) 558-2436', t: 'Yesterday', p: 'Going', us: 1 },
     { n: '78727', t: 'Wednesday', p: 'Wildflower Cases: more solid colorways, coming right up! shop the new drop now', us: 1 },
     { n: '729725', t: 'Sunday', p: 'PayPal: 076786 is your security code. Don\'t share it.', us: 1, dot: 1 },
-    { n: '24273', t: 'Sunday', p: 'Chase | Zelle(R): DONGMIN HAN sent you $7.00 & it\'s ready now. Reply STOP to cancel.', us: 1, dot: 1 },
+    { n: '24273', t: '2/28/25', p: 'Chase | Zelle(R): WOONHAK KIM sent you $7.00 & it\'s ready now. Reply STOP to cancel.', us: 1, dot: 1 },
     { n: '비니비니언니', t: '2/18/25', p: '네!!!!!', who: '비니비니언니', open: 'bini' },
     { n: '상히기니', t: '2/17/25', p: '잠만...', who: '상히기니', open: 'gini' },
   ];
