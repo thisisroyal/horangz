@@ -42,18 +42,20 @@
   $('#apps').append(el);
 
   /* mini player: ▶ plays the real song (downloaded only on the first tap), the white bar follows the playback */
-  const DUR = 173.3, AT = DUR * 16 / 402;        // it was paused where the bar's white part ended (16 px)
+  const DUR = 173.3;                             // seconds, used until the file reports its own length
   const song = new Audio(), pp = el.querySelector('.ym-pp'), bar = el.querySelector('.ym-prog i');
   song.preload = 'none';
   let raf = 0;
-  const draw = () => { bar.style.transform = `scaleX(${song.currentTime / (song.duration || DUR)})`; if (!song.paused) raf = requestAnimationFrame(draw); };
+  const len = () => (isFinite(song.duration) && song.duration > 0 ? song.duration : DUR);
+  const draw = () => { bar.style.transform = `scaleX(${Math.min(1, song.currentTime / len())})`; if (!song.paused) raf = requestAnimationFrame(draw); };
   const icon = on => { pp.innerHTML = on ? I.pause : I.play; pp.setAttribute('aria-label', on ? 'Pause' : 'Play'); };
   pp.addEventListener('click', () => {
-    if (!song.src) { song.src = `${A}hellyeah.mp3`; song.addEventListener('loadedmetadata', () => { song.currentTime = AT; }, { once: true }); }
+    if (!song.src) song.src = `${A}hellyeah.mp3`;   // starts at 0:00
     if (song.paused) song.play().catch(() => icon(false)); else song.pause();
   });
   song.addEventListener('play', () => { icon(true); cancelAnimationFrame(raf); draw(); });
   song.addEventListener('pause', () => { icon(false); cancelAnimationFrame(raf); draw(); });
+  song.addEventListener('timeupdate', () => song.paused && draw());   // e.g. after a seek while paused
   song.addEventListener('ended', () => { song.currentTime = 0; draw(); });
   APPVIEWS.ytmusic = { el, close: () => setTimeout(() => (el.querySelector('.ym-sc').scrollTop = 0), 400) };
 })();
