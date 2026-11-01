@@ -50,7 +50,10 @@
   const draw = () => { bar.style.transform = `scaleX(${Math.min(1, song.currentTime / len())})`; if (!song.paused) raf = requestAnimationFrame(draw); };
   const icon = on => { pp.innerHTML = on ? I.pause : I.play; pp.setAttribute('aria-label', on ? 'Pause' : 'Play'); };
   pp.addEventListener('click', () => {
-    if (!song.src) song.src = `${A}hellyeah.mp3`;   // starts at 0:00
+    if (!song.src) {                               // starts at 0:00, mixed with the alerts (see SND in app.js)
+      song.src = `${A}hellyeah.mp3`;
+      if (SND) { SND.ctx.createMediaElementSource(song).connect(SND.music); SND.ctx.resume(); }
+    }
     if (song.paused) song.play().catch(() => icon(false)); else song.pause();
   });
   song.addEventListener('play', () => { icon(true); cancelAnimationFrame(raf); draw(); });

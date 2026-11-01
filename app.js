@@ -93,6 +93,29 @@ function fit() {
 addEventListener('resize', fit);
 fit();
 
+/* ===== Sound: one audio context shared by music and alerts =====
+   Music and alerts are mixed here (a second <audio> stream would take over on iPhones and mute the alerts).
+   Alerts are boosted (+14 dB: the alert file is mastered ~16 dB quieter than the song) and the music dips under them.
+   Browsers only start audio after the visitor's first tap/key. */
+const SND = (() => {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  const ctx = new AC(), music = ctx.createGain(), fx = ctx.createGain();
+  fx.gain.value = 5;
+  music.connect(ctx.destination); fx.connect(ctx.destination);
+  const unlock = () => ctx.resume().then(() => ['pointerup', 'touchend', 'keydown'].forEach(t => removeEventListener(t, unlock, true)));
+  ['pointerup', 'touchend', 'keydown'].forEach(t => addEventListener(t, unlock, true));
+  ctx.resume().catch(() => {});
+  return {
+    ctx, music, fx,
+    duck(sec) {                                     // music down to 25% while an alert plays, then back
+      const g = music.gain, t = ctx.currentTime;
+      g.cancelScheduledValues(t); g.setValueAtTime(g.value, t);
+      g.linearRampToValueAtTime(.25, t + .06); g.setValueAtTime(.25, t + sec); g.linearRampToValueAtTime(1, t + sec + .4);
+    },
+  };
+})();
+
 /* ===== Navigation: player (landscape) <-> home <-> apps ===== */
 const APPVIEWS = {};                               // id -> { el, open(), close() } registered by app modules
 let current = null;

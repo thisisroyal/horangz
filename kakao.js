@@ -249,19 +249,17 @@
   // notification sound: decoded once, rung 0.5 s before each banner. Browsers start audio only after the visitor's
   // first tap/key (some desktop browsers allow it earlier for sites already visited), so it is tried on load too.
   const ding = (() => {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return () => { if (!document.hidden) navigator.vibrate?.([160, 90, 160]); };
-    const ctx = new AC();
+    const buzz = () => navigator.vibrate?.([160, 90, 160]);   // Android browsers only (iOS has no vibration for the web); free, on-device
+    if (!SND) return () => { if (!document.hidden) buzz(); };
+    const { ctx } = SND;
     let buf = null, waiting = -1e9;               // when a ding was asked for before the sound finished decoding
-    const play = () => { const s = ctx.createBufferSource(); s.buffer = buf; s.connect(ctx.destination); s.start(); };
+    const play = () => { const s = ctx.createBufferSource(); s.buffer = buf; s.connect(SND.fx); SND.duck(buf.duration); s.start(); };
     fetch('assets/sound/kakao.mp3').then(r => r.arrayBuffer()).then(a => ctx.decodeAudioData(a))
       .then(b => { buf = b; if (performance.now() - waiting < 600 && ctx.state === 'running' && !document.hidden) play(); }).catch(() => {});
-    const unlock = () => ctx.resume().then(() => ['pointerup', 'touchend', 'keydown'].forEach(t => removeEventListener(t, unlock, true)));
-    ['pointerup', 'touchend', 'keydown'].forEach(t => addEventListener(t, unlock, true));
-    ctx.resume().catch(() => {});
     return () => {
       if (document.hidden) return;                 // silent and still in the background
-      navigator.vibrate?.([160, 90, 160]);         // Android browsers only (iOS has no vibration for the web); free, on-device
+      buzz();
+      if (ctx.state === 'interrupted') ctx.resume().then(() => buf && play()).catch(() => {});   // iPhone: another sound took the audio session
       if (ctx.state !== 'running') return;
       if (buf) play(); else waiting = performance.now();
     };
