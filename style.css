@@ -31,7 +31,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dark-ui #status{color:#000}
 .dark-ui .sb-bat{background:rgba(0,0,0,.25)}
 .sb-left{display:flex;align-items:center;gap:3px;font-size:17px;font-weight:600;letter-spacing:-.2px;transition:opacity .3s}
-.sb-bell{width:17px;height:17px}
 .sb-right{display:flex;align-items:center;gap:6px}
 .sb-sig{width:19px;height:12px}
 .sb-wifi{width:17px;height:12px}
@@ -132,8 +131,6 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .av2 img{width:30px;height:30px;border-radius:11.5px}
 .av2 img:first-child{left:0;top:0}
 .av2 img:last-child{right:0;bottom:0;box-shadow:0 0 0 1.5px #fff}
-.av4 img{width:22.5px;height:22.5px;border-radius:8.5px}
-.av4 img:nth-child(2n){right:0}.av4 img:nth-child(n+3){bottom:0}
 .kt-room .tx{flex:1;min-width:0;padding-top:2px}
 .kt-room .nm{display:flex;justify-content:space-between;gap:8px;font-size:17px;line-height:22px}
 .kt-room .nm b{font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -214,7 +211,12 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .nt-tx b{display:block;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nt-tx p{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nt time{align-self:flex-start;margin-top:12px;font-size:14px;color:#8a8a8e}
-.b.pic{display:block;width:200px;height:auto;max-height:290px;padding:0;border-radius:14px!important;object-fit:cover;background:#dbe3e9}
+.b.pic{display:block;width:283px;max-width:none;height:auto;max-height:380px;padding:0;border-radius:14px!important;object-fit:cover;background:#dbe3e9}
+/* photo messages: KakaoTalk size (283 px wide), share button 16 px beside the photo, centred on it */
+.pw{position:relative;flex:none}
+.pw .share{position:absolute;top:50%;left:calc(100% + 16px);width:30px;height:30px;margin-top:-15px;border-radius:50%;background:#c2ced9;color:#434c51;display:grid;place-items:center}
+.me .pw .share{left:auto;right:calc(100% + 16px)}
+.pw .share svg{width:16px;height:16px;fill:none}
 .b.pic::before{display:none!important}
 /* KakaoTalk: white strip behind the status bar; Chats header and filters stay put, the banner scrolls with the list */
 #kakao::before{content:"";position:absolute;z-index:3;top:0;left:0;right:0;height:54px;background:#fff}
@@ -227,8 +229,6 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .kt-list>.kt-banner{margin:0 16px 16px}
 #kakao .kt-chats{display:flex;flex-direction:column;overflow:hidden}
 #kakao .sc[hidden]{display:none}
-.kt-chats .kt-list{flex:1;min-height:0;margin-top:8px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
-.kt-chats .kt-list::-webkit-scrollbar{display:none}
 
 /* ===== Notes ===== */
 #notes{background:#f2f2f6;color:#000;font-size:17px}
@@ -258,8 +258,6 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .nrow+.nrow::before{left:27px}
 .frow.go,.nrow[data-note]{cursor:pointer}
 .frow.go:active,.nrow[data-note]:active{background:#e5e5ea}
-.tags{display:flex;flex-wrap:wrap;gap:8px;padding:15px 16px}
-.tags span{height:33px;padding:0 12px;border-radius:12px;background:#ececf0;color:#838387;font-size:17px;font-weight:600;line-height:33px}
 .nrow{position:relative;padding:11px 27px 10px}
 .nrow b{display:block;font-size:17.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nrow p{font-size:16px;color:#8a8a8e;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -271,7 +269,6 @@ figcaption,.label{margin-top:5px;font-size:12px;font-weight:500;text-align:cente
 .gb svg{width:22px;height:22px}
 .gb.txt{padding:0 17px;font-size:17.5px}
 .npill{padding:0 14px 0 18px}
-.ic{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .nbar{position:absolute;z-index:3;left:27px;right:34px;bottom:27px;display:flex;justify-content:space-between;align-items:center}
 .nbar .gb{height:49px;border-radius:25px}
 .nbar .big{width:48px;min-width:48px;height:48px;padding:0}
