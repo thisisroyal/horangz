@@ -155,8 +155,8 @@
       (m.lines || []).forEach(t => parts.push({ ...m, mediaKey: undefined, lines: [t], extraLines: undefined }));
       parts.forEach((obj, i) => {
         if (x.k === GROUP) {
-          // same sender twice in a row: 5-8 real seconds apart; a new sender never lands before the previous bubble
-          if (last) at = last.sender === m.sender ? last.at + (5e3 + Math.random() * 3e3) * SPEED : Math.max(at, last.at + 1500 * SPEED);
+          // same sender twice in a row: 4-6.4 real seconds apart (5-8 s sped up 1.25x); a new sender never lands before the previous bubble
+          if (last) at = last.sender === m.sender ? last.at + (4e3 + Math.random() * 2.4e3) * SPEED : Math.max(at, last.at + 1500 * SPEED);
           last = { sender: m.sender, at };
         } else if (i) at += 1400;
         if (i) obj.part = true;
