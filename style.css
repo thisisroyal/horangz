@@ -487,8 +487,12 @@ img{-webkit-user-drag:none}
 /* KakaoTalk: arriving messages rise in; typing dots fade out */
 .kt-msgs>.pop{animation:msgIn .42s cubic-bezier(.22,.9,.3,1) both}
 @keyframes msgIn{from{opacity:0;transform:translateY(14px)}}
-.kt-msgs>.ty-row{transition:opacity .25s ease,transform .25s ease}
-.kt-msgs>.ty-row.out{opacity:0;transform:translateY(-4px)}
+.kt-msgs>.ty-row{transition:opacity .28s ease,height .32s cubic-bezier(.4,0,.2,1),margin .32s cubic-bezier(.4,0,.2,1),padding .32s cubic-bezier(.4,0,.2,1)}
+.kt-msgs>.ty-row.out{opacity:0}
+/* the sender's bubble takes the dots' place: avatar and name stay, the bubble fades in where the dots fade out */
+.kt-msgs>.swap .b{animation:bIn .32s cubic-bezier(.2,.8,.3,1) both;transform-origin:0 50%}
+.kt-msgs>.swap .meta{animation:bIn .32s ease both}
+@keyframes bIn{from{opacity:0;transform:scale(.94)}}
 /* lists stop at a half-visible, fading last row */
 .kt-fade{position:relative;height:22px;margin-top:-22px;background:linear-gradient(rgba(255,255,255,0),#fff 95%);pointer-events:none}
 .kt-list .kt-fade{height:26px;margin-top:-26px}
@@ -497,10 +501,10 @@ img{-webkit-user-drag:none}
 .kt-msgs::before{content:"";position:absolute;z-index:1;left:0;right:0;top:100px;height:88px;background:linear-gradient(#abc1d1 12%,rgba(171,193,209,0));pointer-events:none}
 /* KakaoTalk: "+" attachment panel */
 /* + sheet: input bar and panel rise together on the iOS keyboard curve; chat area shrinks with them */
-.kt-in,.kt-plus{transition:transform .38s cubic-bezier(.38,.7,.125,1)}
-.kt-msgs{transition:bottom .38s cubic-bezier(.38,.7,.125,1)}
-.kt-in>button.plus svg{transition:transform .3s cubic-bezier(.38,.7,.125,1)}
-.kt-in>button.plus svg{transition:transform .25s}
+.kt-in,.kt-plus{transition:transform .5s cubic-bezier(.32,.72,0,1);will-change:transform}
+.kt-msgs.ride{transition:transform .5s cubic-bezier(.32,.72,0,1)}
+.plus-on .kt-msgs.keep{bottom:90px}
+.kt-in>button.plus svg{transition:transform .4s cubic-bezier(.32,.72,0,1)}
 .plus-on .kt-in>button.plus svg{transform:rotate(45deg)}
 .plus-on .kt-in{transform:translateY(-263px)}
 .plus-on .kt-msgs{bottom:353px}
@@ -524,8 +528,8 @@ img{-webkit-user-drag:none}
 .kt-friends .kt-fade{height:21px;margin-top:-21px;background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.8) 62%,#fff)}
 
 .plus-on .kt-in{height:90px}
-.kt-plus span{opacity:0;transform:translateY(10px);transition:opacity .25s,transform .35s cubic-bezier(.2,.8,.2,1)}
-.plus-on .kt-plus span{opacity:1;transform:none;transition-delay:calc(.05s + var(--i) * .015s)}
+.kt-plus span{opacity:0;transform:translateY(12px);transition:opacity .2s,transform .3s cubic-bezier(.32,.72,0,1)}
+.plus-on .kt-plus span{opacity:1;transform:none;transition:opacity .35s,transform .5s cubic-bezier(.32,.72,0,1);transition-delay:calc(.06s + var(--i) * .018s)}
 .b .at{color:#3a6ccf}
 
 /* home: 2x2 icon block in the right half of the widget row; three app rows below, the row above Search left empty */
