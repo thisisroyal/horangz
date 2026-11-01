@@ -601,6 +601,7 @@ img{-webkit-user-drag:none;-webkit-touch-callout:none}
 .im.tail span::after{content:"";position:absolute;bottom:0;width:14px;height:17px;background:inherit}
 .im.in.tail span::after{left:-5px;border-bottom-right-radius:14px 11px;clip-path:polygon(0 100%,100% 0,100% 100%);background:#e9e9eb}
 .im.out.tail span::after{right:8px;bottom:-7px;width:16px;height:13px;clip-path:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 13'%3E%3Cpath d='M0 0Q4 9 15.5 13Q13.6 8 14 0Z' fill='%2359a6f5'/%3E%3C/svg%3E") 0 0/100% 100%}
+.im-more{flex:none;height:64px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;margin-bottom:-4px;-webkit-mask:linear-gradient(transparent,rgba(0,0,0,.55));mask:linear-gradient(transparent,rgba(0,0,0,.55));pointer-events:none}
 .im-st{margin:14px 0 8px;text-align:center;font-size:12.5px;color:#8a8a8e}
 .im-st b{font-weight:600}
 .im-rd{margin:-3px 22px 10px 0;text-align:right;font-size:13px;color:#8a8a8e}

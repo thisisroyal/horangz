@@ -127,12 +127,15 @@
       ['in', '뒤에'], ['in', 'ㅋㅋㅋㅋㅋㅋ'], ['in', '와 봐'], ['in', '용궁가기전에 얼굴 좀 보자'],
     ]],
   };
-  const chatHtml = CHAT => CHAT.map(([k, a, b], i) => {
+  const bubbles = CHAT => CHAT.map(([k, a, b], i) => {
     if (k === 'stamp') return `<p class="im-st"><b>${a}</b>${b ? ` at ${b}` : ''}</p>`;
     if (k === 'read') return `<p class="im-rd"><b>읽음:</b> ${a}</p>`;
     const nx = CHAT[i + 1], tail = !nx || nx[0] !== k;
     return `<div class="im ${k}${tail ? ' tail' : ''}"><span>${a}</span></div>`;
   }).join('');
+  // older messages peek out above the first date and fade away: there is more, but the scroll stops here
+  const OLDER = { bini: [['in', '여주 지금 학교야?'], ['out', '웅 14층!']], gini: [['out', 'ㅇㅋㅇㅋ 이따봐'], ['in', '웅 도착하면 연락해']] };
+  const chatHtml = (CHAT, id) => `<div class="im-more">${bubbles(OLDER[id] || [])}</div>${bubbles(CHAT)}`;
 
   const ms = app('msg-app', `
     <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="ios-av" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9b4d6"/><stop offset="1" stop-color="#7f8ab8"/></linearGradient></defs></svg>
@@ -151,7 +154,7 @@
     const c = CHATS[e.target.closest('[data-chat]')?.dataset.chat];
     if (!c) return;
     room.querySelector('.im-who b').textContent = c[0];
-    imsc.innerHTML = chatHtml(c[1]);
+    imsc.innerHTML = chatHtml(c[1], e.target.closest('[data-chat]').dataset.chat);
     ms.classList.add('in-room');
     imsc.scrollTop = imsc.scrollHeight;
   });
