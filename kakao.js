@@ -90,7 +90,7 @@
   function load() {
     const s = document.createElement('script');
     s.src = 'data/chatData.js' + (VER && '?' + VER);
-    s.onload = () => { data = window.chatData; readState(); queue = pending(); build(); badges(); setInterval(arrive, 400); };
+    s.onload = () => { data = window.chatData; readState(); queue = pending(); build(); badges(); arrive(); setInterval(arrive, 400); };
     document.head.append(s);
   }
   load();
@@ -150,7 +150,7 @@
     let last = null;                                // previous bubble in 호랑이들
     list.forEach(x => {
       const same = list.filter(y => y.st === x.st), n = same.indexOf(x);
-      let at = START + (x.st - LIVE_FROM) * 6e4 + (0.6 + n * 50 / same.length) * 1e3;
+      let at = START + (x.st - LIVE_FROM) * 6e4 + (1.5 + n * 49 / same.length) * 1e3;
       const { m } = x, parts = m.mediaKey ? [{ ...m, lines: undefined, extraLines: undefined }] : [];
       (m.lines || []).forEach(t => parts.push({ ...m, mediaKey: undefined, lines: [t], extraLines: undefined }));
       parts.forEach((obj, i) => {
@@ -166,6 +166,7 @@
     return out.sort((a, b) => a.at - b.at);
   }
   function arrive() {
+    ringAhead();
     while (queue.length && queue[0].at <= simNow()) {
       const { k, obj, date } = queue.shift(), msgs = data[k];
       if (date) msgs.push(date);
@@ -244,21 +245,33 @@
   nt.innerHTML = `<div class="nt-av"><img alt=""><img class="nt-app" src="assets/icons/kakaotalk.webp" alt=""></div><div class="nt-tx"><b></b><b class="rm"></b><p></p></div><time>now</time>`;
   let ntTimer, ntRoom;
   // notification sound: decoded once, played on every banner; browsers allow audio only after the visitor's first tap/key
+  // notification sound: decoded once, rung 0.5 s before each banner. Browsers start audio only after the visitor's
+  // first tap/key (some desktop browsers allow it earlier for sites already visited), so it is tried on load too.
   const ding = (() => {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return () => {};
     const ctx = new AC();
-    let buf = null;
-    fetch('assets/sound/kakao.mp3').then(r => r.arrayBuffer()).then(a => ctx.decodeAudioData(a)).then(b => { buf = b; }).catch(() => {});
+    let buf = null, waiting = -1e9;               // when a ding was asked for before the sound finished decoding
+    const play = () => { const s = ctx.createBufferSource(); s.buffer = buf; s.connect(ctx.destination); s.start(); };
+    fetch('assets/sound/kakao.mp3').then(r => r.arrayBuffer()).then(a => ctx.decodeAudioData(a))
+      .then(b => { buf = b; if (performance.now() - waiting < 600 && ctx.state === 'running') play(); }).catch(() => {});
     const unlock = () => ctx.resume().then(() => ['pointerup', 'touchend', 'keydown'].forEach(t => removeEventListener(t, unlock, true)));
     ['pointerup', 'touchend', 'keydown'].forEach(t => addEventListener(t, unlock, true));
-    return () => {
-      if (!buf || ctx.state !== 'running') return;
-      const s = ctx.createBufferSource(); s.buffer = buf; s.connect(ctx.destination); s.start();
-    };
+    ctx.resume().catch(() => {});
+    return () => { if (ctx.state !== 'running') return; if (buf) play(); else waiting = performance.now(); };
   })();
+  const LEAD = 500;                                // ms of real time the sound comes before the banner
+  function ringAhead() {
+    for (const q of queue) {
+      const ms = (q.at - simNow()) / SPEED;
+      if (ms > LEAD + 450) break;                  // queue is in time order; arrive() runs every 400 ms
+      if (q.rung) continue;
+      q.rung = 1;
+      setTimeout(() => !inRoom(q.k) && ding(), Math.max(0, ms - LEAD));   // no sound inside that room
+      setTimeout(arrive, ms + 5);                  // and the banner lands on time, not on the next 400 ms tick
+    }
+  }
   function notify(k, m) {
-    ding();                                        // only reached when 여주 is not inside that room
     ntRoom = k;
     const who = PEOPLE[m.sender]?.[0] || m.sender, text = m.mediaKey ? 'Photo' : m.lines[0];
     nt.querySelector('.nt-av img').src = P(m.sender);
