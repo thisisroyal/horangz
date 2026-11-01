@@ -110,7 +110,6 @@ function closeApp(instant) {
 }
 const setBadge = (id, n) => { const b = $(`[data-app=${id}] .badge`); if (b) b.textContent = n; };
 $('#homebtn').addEventListener('click', () => go('port'));
-$('#hb').addEventListener('click', () => closeApp());
 $('#dock').addEventListener('click', e => { const id = e.target.closest('.app')?.dataset.app; id && openApp(id); });
 const launch = id => (id === 'watcha' ? go('land') : openApp(id));
 for (const g of ['#grid', '#grid2']) $(g).addEventListener('click', e => {
@@ -132,6 +131,14 @@ function openFolder(id, from) {
   box.style.setProperty('--fs', r.width / b.width);
   requestAnimationFrame(() => requestAnimationFrame(() => fv.classList.add('on')));
 }
+// home indicator: closes an app, else closes an open folder, else gives the home screen a small iOS-style nudge
+$('#hb').addEventListener('click', () => {
+  if (current) return closeApp();
+  if (fv.classList.contains('on')) return fv.classList.remove('on');
+  const h = $('#home'), cx = h.offsetWidth / 2, cy = h.offsetHeight / 2;
+  for (const c of h.children) if (c !== fv) c.style.transformOrigin = `${cx - c.offsetLeft}px ${cy - c.offsetTop}px`;
+  h.classList.remove('nudge'); void h.offsetWidth; h.classList.add('nudge');
+});
 fv.addEventListener('click', e => {
   const id = e.target.closest('[data-app]')?.dataset.app;
   if (!e.target.closest('.fv-box') || id) { fv.classList.remove('on'); if (id) setTimeout(() => launch(id), 200); }

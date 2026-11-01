@@ -44,6 +44,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* home screen */
 #home{position:absolute;inset:0;background:#6b8 url(assets/wallpaper/home.jpg) center/cover}
 .enter #home{animation:zi .5s cubic-bezier(.2,.8,.2,1)}
+#home.nudge>:not(.fv){animation:nudge .5s cubic-bezier(.3,.7,.3,1)}
+@keyframes nudge{30%{scale:.955}68%{scale:1.006}}
 .enter #player{animation:zp .5s cubic-bezier(.2,.8,.2,1)}
 @keyframes zi{from{transform:scale(1.12);opacity:0}}
 

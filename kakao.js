@@ -4,6 +4,7 @@
   const ME = '은여주';
   const OPEN_CHAT = 686;                         // open-chat tab badge
   let unread = 530;                              // total unread before 3/7 10:38 PM (the 10:38-10:40 messages are added on load)
+  // per room: 10:38-10:40 messages, and in 호랑이들 everything after 3/5 3:34 PM (where 여주 stopped reading)
   const roomUnread = {};
   const T = (h, m) => Date.UTC(2025, 2, 7) / 6e4 + h * 60 + m;   // 3/7, Chicago wall-clock minutes
   const UNSEEN = T(22, 38), LIVE_FROM = T(22, 41);  // 10:38-10:40 arrived before the visit (unread); 10:41 on arrive live
@@ -119,7 +120,9 @@
       for (const m of msgs) {
         if (m.type === 'date') { date = m.date; continue; }
         const [y, mo, d] = ymd(date), st = Date.UTC(y, mo - 1, d) / 6e4 + mins(m.time);
-        if (st >= UNSEEN && st < LIVE_FROM) { const n = (m.mediaKey ? 1 : 0) + (m.lines?.length || 0); roomUnread[k] = (roomUnread[k] || 0) + n; unread += n; }
+        const n = m.isMe ? 0 : (m.mediaKey ? 1 : 0) + (m.lines?.length || 0) + (m.extraLines?.length || 0);
+        if (st >= UNSEEN && st < LIVE_FROM) unread += n;   // older unread is already inside the 530
+        if (st < LIVE_FROM && (st >= UNSEEN || k === GROUP && st > KEEP1)) roomUnread[k] = (roomUnread[k] || 0) + n;
         if (st >= D7) { if (k === GROUP && st < LIVE_FROM) (st < UNSEEN ? speakPre : speak)(m); continue; }
         if (k === GROUP && st > KEEP1) m.unread = 1; else delete m.unread;
       }
