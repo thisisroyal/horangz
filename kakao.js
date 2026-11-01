@@ -3,9 +3,10 @@
 (() => {
   const ME = '은여주';
   const OPEN_CHAT = 686;                         // open-chat tab badge
-  let unread = 530;                              // total unread shown on icon and tabs
+  let unread = 530;                              // total unread before 3/7 10:38 PM (the 10:38-10:40 messages are added on load)
   const roomUnread = {};
-  const LIVE_FROM = Date.UTC(2025, 2, 7) / 6e4 + 22 * 60 + 38; // messages from 3/7 10:38 PM arrive live
+  const T = (h, m) => Date.UTC(2025, 2, 7) / 6e4 + h * 60 + m;   // 3/7, Chicago wall-clock minutes
+  const UNSEEN = T(22, 38), LIVE_FROM = T(22, 41);  // 10:38-10:40 arrived before the visit (unread); 10:41 on arrive live
   const FIRST = '성호오빠';                       // within a minute, this room's messages arrive first
   const VER = document.currentScript.src.split('?')[1] || '';
   // data sender name -> [display name, profile image]
@@ -88,14 +89,14 @@
   function load() {
     const s = document.createElement('script');
     s.src = 'data/chatData.js' + (VER && '?' + VER);
-    s.onload = () => { data = window.chatData; readState(); queue = pending(); build(); setInterval(arrive, 400); };
+    s.onload = () => { data = window.chatData; readState(); queue = pending(); build(); badges(); setInterval(arrive, 400); };
     document.head.append(s);
   }
   load();
 
   /* ----- read counts (the yellow numbers) -----
      Before 3/7 everything is read, except 호랑이들 after 3/5 3:34 PM where 여주 never looked (a 1 stays).
-     호랑이들 on 3/7: counting restarts at the first live message (상히기니's 10:38 photo), which shows 8.
+     호랑이들 on 3/7: counting restarts at 상히기니's 10:38 photo, which shows 8.
      From there each message shows the previous count, minus one when its sender is new since that photo
      (then every earlier count above 1 also drops by one). Counts stay within 1-8 and never rise.
      A new participant counts as soon as their typing starts (~2.5 s before the message), not on arrival.
@@ -118,7 +119,8 @@
       for (const m of msgs) {
         if (m.type === 'date') { date = m.date; continue; }
         const [y, mo, d] = ymd(date), st = Date.UTC(y, mo - 1, d) / 6e4 + mins(m.time);
-        if (st >= D7) { if (k === GROUP && st < LIVE_FROM) speakPre(m); continue; }
+        if (st >= UNSEEN && st < LIVE_FROM) { const n = (m.mediaKey ? 1 : 0) + (m.lines?.length || 0); roomUnread[k] = (roomUnread[k] || 0) + n; unread += n; }
+        if (st >= D7) { if (k === GROUP && st < LIVE_FROM) (st < UNSEEN ? speakPre : speak)(m); continue; }
         if (k === GROUP && st > KEEP1) m.unread = 1; else delete m.unread;
       }
     }
@@ -178,8 +180,8 @@
     // a new 호랑이들 participant has read everything once they start typing: counts drop now, not on arrival
     const ng = queue.find(q => q.k === GROUP);
     if (ng && ng.at - simNow() < TYPE && readBy(ng.obj.sender)) { if (inRoom(GROUP)) syncRoom(true); }
-    // 성호 keeps starting and stopping typing in his room from 10:38 until 10:45
-    const who = real || (tease && inRoom(FIRST) && simNow() < START + 7 * 6e4 ? FIRST : null);
+    // 성호 keeps starting and stopping typing in his room until 10:45
+    const who = real || (tease && inRoom(FIRST) && simNow() < START + 4 * 6e4 ? FIRST : null);
     setTyping(who);
   }
   // typing dots live in one element that is reused, moved and faded; never re-rendered

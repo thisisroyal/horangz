@@ -1,6 +1,6 @@
 'use strict';
 /* ===== Config ===== */
-const START = Date.UTC(2025, 2, 8, 4, 38); // 2025-03-07 22:38 CST (Chicago)
+const START = Date.UTC(2025, 2, 8, 4, 41); // 2025-03-07 22:41 CST (Chicago)
 const TZ = 'America/Chicago';
 // Chicago (O'Hare), night of 2025-03-07
 const WEATHER = { temp: 0, cond: 'Cloudy', hi: 2, lo: 0 };
@@ -21,7 +21,7 @@ const fold = (id, name) => [id, name, { folder: F[id].map(f => f[0]) }];
 const TOP = [['weather', 'Weather'], ['calendar', 'Calendar', { type: 'cal' }], ['photos', 'Photos'], ['camera', 'Camera']];
 const APPS = [
   ['notes', 'Notes'], ['clock', 'Clock', { type: 'clk' }], fold('ect', 'Ect'), fold('productivity', 'Productivity'),
-  fold('utilities', 'Utilities'), fold('ott', 'OTT'), ['kakaotalk', 'KakaoTalk', { badge: 530 }], fold('sns', 'SNS'),
+  fold('utilities', 'Utilities'), fold('ott', 'OTT'), ['kakaotalk', 'KakaoTalk', { badge: 545 }], fold('sns', 'SNS'),
   ['gmail', 'Gmail'], ['googlemaps', 'Google Maps'], fold('ride', 'Ride'), fold('delivery', 'Delivery'),
 ];
 const DOCK = [['phone'], ['safari'], ['messages'], ['ytmusic']];
